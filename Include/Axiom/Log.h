@@ -5,7 +5,7 @@
 #include <stdarg.h>
 #include <stdio.h>
 
-#include <Axiom/Attributes.h>
+#include <Axiom/Compiler/Attributes.h>
 #include <Axiom/Types.h>
 
 namespace AXM {

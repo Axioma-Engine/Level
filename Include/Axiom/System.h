@@ -36,7 +36,7 @@
 #pragma once
 
 
-/* ========================================================================
+/**
  * @defgroup AXM_CXX_VERSION C++ Standard Version Detection
  * @brief Detects and reports the C++ standard version.
  *
@@ -48,16 +48,12 @@
  * for simple feature gating in preprocessor conditionals.
  *
  * @{
- * ======================================================================== */
-
-/** @brief C++ is the language being compiled. Always 1. */
-#define AXM_LANGUAGE_CXX 1
-
-/** @cond INTERNAL */
+ */
 #if !defined(__cplusplus) && !defined(_MSVC_LANG)
 #    warning "System.h is a C++-only header. Do not include it from C translation units."
 #endif
-/** @endcond */
+/** @brief C++ is the language being compiled. Always 1. */
+#define AXM_LANGUAGE_CXX 1
 
 /** @brief Detected C++ standard version (matches __cplusplus values).
  *
@@ -79,17 +75,14 @@
 #    define AXM_CXX_STANDARD __cplusplus
 #endif
 
-/** @cond INTERNAL */
 /* Fallback for pre-standard compilers or when __cplusplus is not set */
 #if AXM_CXX_STANDARD == 0
 #    define AXM_CXX_STANDARD 199711L
 #endif
-/** @endcond */
-
 /** @} */
 
 
-/* ========================================================================
+/**
  * @defgroup AXM_OS_DETECTION Operating System Detection
  * @brief Detects the target operating system.
  *
@@ -113,8 +106,7 @@
  * If the OS is not recognized, @c AXM_OS_UNKNOWN is defined instead.
  *
  * @{
- * ======================================================================== */
-
+ */
 #if defined(_WIN32) || defined(_WIN64)
 /** @brief Windows OS (32-bit or 64-bit). */
 #    define AXM_OS_WINDOWS 1
@@ -219,11 +211,10 @@
 /** @brief Operating system could not be determined. */
 #    define AXM_OS_UNKNOWN 1
 #endif
-
 /** @} */
 
 
-/* ========================================================================
+/**
  * @defgroup AXM_ARCH_DETECTION CPU Architecture Detection
  * @brief Detects the target CPU architecture.
  *
@@ -255,12 +246,11 @@
  * Also defines family macros (e.g., @c AXM_ARCH_X86_FAMILY for both x86 and x64).
  *
  * @{
- * ======================================================================== */
+ */
 
 /** @defgroup AXM_ARCH_X86 x86 / x86-64 (Intel, AMD)
  * @brief x86 family: 32-bit (i386+) and 64-bit (x86-64/AMD64).
  * @{ */
-
 #if defined(__x86_64__) || defined(__amd64__) || defined(_M_X64) || defined(_M_AMD64)
 /** @brief 64-bit x86 (x86-64, AMD64). */
 #    define AXM_ARCH_X64        1
@@ -276,13 +266,11 @@
 /** @brief x86 family. */
 #    define AXM_ARCH_X86_FAMILY 1
 #endif
-
 /** @} */
 
 /** @defgroup AXM_ARCH_ARM ARM (Advanced RISC Machine)
  * @brief ARM architecture: 32-bit and 64-bit variants.
  * @{ */
-
 #if defined(_M_ARM64EC)
 /** @brief ARM64EC (x64 emulation). */
 #    define AXM_ARCH_ARM64EC    1
@@ -301,13 +289,11 @@
 /** @brief ARM family. */
 #    define AXM_ARCH_ARM_FAMILY 1
 #endif
-
 /** @} */
 
 /** @defgroup AXM_ARCH_RISCV RISC-V
  * @brief RISC-V open ISA.
  * @{ */
-
 #if defined(__riscv)
 /** @brief RISC-V architecture. */
 #    define AXM_ARCH_RISCV 1
@@ -324,18 +310,15 @@
 #        define AXM_ARCH_RISCV_UNKNOWN 1
 #    endif
 #endif
-
 /** @} */
 
 /** @defgroup AXM_ARCH_OTHER Other Architectures
  * @brief WebAssembly, MIPS, PowerPC, SPARC, LoongArch, etc.
  * @{ */
-
 /** @brief WebAssembly. */
 #if defined(__EMSCRIPTEN__) || defined(__wasm__)
 #    define AXM_ARCH_WASM 1
 #endif
-
 /** @brief MIPS and MIPS64. */
 #if defined(__mips__) || defined(__mips)
 #    define AXM_ARCH_MIPS_FAMILY 1
@@ -347,7 +330,6 @@
 #        define AXM_ARCH_MIPS_UNKNOWN 1
 #    endif
 #endif
-
 /** @brief PowerPC 32-bit and 64-bit. */
 #if defined(__PPC64__) || defined(__powerpc64__) || defined(_ARCH_PPC64)
 #    define AXM_ARCH_PPC64      1
@@ -356,7 +338,6 @@
 #    define AXM_ARCH_PPC32      1
 #    define AXM_ARCH_PPC_FAMILY 1
 #endif
-
 /** @brief SPARC and SPARC64. */
 #if defined(__sparc__) || defined(__sparc)
 #    define AXM_ARCH_SPARC_FAMILY 1
@@ -366,7 +347,6 @@
 #        define AXM_ARCH_SPARC32 1
 #    endif
 #endif
-
 /** @brief LoongArch (LOONGSON). */
 #if defined(__loongarch__)
 #    define AXM_ARCH_LOONGARCH_FAMILY 1
@@ -376,32 +356,26 @@
 #        define AXM_ARCH_LOONGARCH32 1
 #    endif
 #endif
-
 /** @brief IBM System z (mainframe, 64-bit and 31-bit). */
 #if defined(__s390x__)
 #    define AXM_ARCH_S390X 1
 #elif defined(__s390__)
 #    define AXM_ARCH_S390 1
 #endif
-
 /** @brief Itanium (IA-64). */
 #if defined(__ia64__) || defined(_M_IA64) || defined(__ia64)
 #    define AXM_ARCH_IA64 1
 #endif
-
 /** @brief DEC VAX (ancient, 32-bit). */
 #if defined(__vax__)
 #    define AXM_ARCH_VAX 1
 #endif
-
 /** @brief Motorola 68000 (ancient, 32-bit). */
 #if defined(__m68k__) || defined(__m68000__)
 #    define AXM_ARCH_M68K 1
 #endif
-
 /** @} */
 
-/** @cond INTERNAL */
 #if !defined(AXM_ARCH_X86_FAMILY)                                                                  \
     && !defined(AXM_ARCH_ARM_FAMILY)                                                               \
     && !defined(AXM_ARCH_RISCV)                                                                    \
@@ -418,12 +392,10 @@
 /** @brief Architecture could not be determined. */
 #    define AXM_ARCH_UNKNOWN 1
 #endif
-/** @endcond */
-
 /** @} */
 
 
-/* ========================================================================
+/**
  * @defgroup AXM_COMPILER_DETECTION Compiler Detection
  * @brief Detects the C++ compiler and version.
  *
@@ -458,8 +430,7 @@
  * If the compiler is not recognized, @c AXM_COMPILER_UNKNOWN is defined.
  *
  * @{
- * ======================================================================== */
-
+ */
 #if defined(__NVCC__)
 /** @brief NVIDIA CUDA Compiler (GCC-like). */
 #    define AXM_COMPILER_NVCC          1
@@ -471,7 +442,6 @@
 #elif defined(__clang__) && defined(_MSC_VER)
 /** @brief Clang-cl (Clang front-end with MSVC back-end). */
 #    define AXM_COMPILER_CLANG_CL      1
-/** @brief MSVC-like compiler group (uses __declspec). */
 #    define AXM_COMPILER_MSVC_LIKE     1
 #    define AXM_COMPILER_VERSION_MAJOR __clang_major__
 #    define AXM_COMPILER_VERSION_MINOR __clang_minor__
@@ -480,7 +450,6 @@
 #elif defined(__clang__)
 /** @brief Clang/LLVM C++ compiler. */
 #    define AXM_COMPILER_CLANG         1
-/** @brief GCC-like compiler group (uses __attribute__). */
 #    define AXM_COMPILER_GCC_LIKE      1
 #    define AXM_COMPILER_VERSION_MAJOR __clang_major__
 #    define AXM_COMPILER_VERSION_MINOR __clang_minor__
@@ -489,7 +458,6 @@
 #elif defined(__INTEL_LLVM_COMPILER)
 /** @brief Intel LLVM Compiler (oneAPI). */
 #    define AXM_COMPILER_INTEL_LLVM    1
-/** @brief GCC-like compiler group. */
 #    define AXM_COMPILER_GCC_LIKE      1
 #    define AXM_COMPILER_VERSION_MAJOR (__INTEL_LLVM_COMPILER / 10000)
 #    define AXM_COMPILER_VERSION_MINOR ((__INTEL_LLVM_COMPILER % 10000) / 100)
@@ -498,7 +466,6 @@
 #elif defined(__INTEL_COMPILER) || defined(__ICC)
 /** @brief Intel C++ Compiler. */
 #    define AXM_COMPILER_INTEL         1
-/** @brief GCC-like compiler group. */
 #    define AXM_COMPILER_GCC_LIKE      1
 #    define AXM_COMPILER_VERSION_MAJOR (__INTEL_COMPILER / 100)
 #    define AXM_COMPILER_VERSION_MINOR (__INTEL_COMPILER % 100)
@@ -507,7 +474,6 @@
 #elif defined(__GNUC__) && (defined(__MINGW32__) || defined(__MINGW64__))
 /** @brief MinGW (GNU tools for Windows). */
 #    define AXM_COMPILER_MINGW    1
-/** @brief GCC-like compiler group. */
 #    define AXM_COMPILER_GCC_LIKE 1
 #    if defined(__MINGW64__)
 /** @brief MinGW 64-bit. */
@@ -523,7 +489,6 @@
 #elif defined(__GNUC__)
 /** @brief GNU C++ Compiler (g++). */
 #    define AXM_COMPILER_GCC           1
-/** @brief GCC-like compiler group. */
 #    define AXM_COMPILER_GCC_LIKE      1
 #    define AXM_COMPILER_VERSION_MAJOR __GNUC__
 #    define AXM_COMPILER_VERSION_MINOR __GNUC_MINOR__
@@ -532,7 +497,6 @@
 #elif defined(_MSC_VER)
 /** @brief Microsoft Visual C++ Compiler. */
 #    define AXM_COMPILER_MSVC          1
-/** @brief MSVC-like compiler group (uses __declspec). */
 #    define AXM_COMPILER_MSVC_LIKE     1
 #    define AXM_COMPILER_VERSION_MAJOR (_MSC_VER / 100)
 #    define AXM_COMPILER_VERSION_MINOR (_MSC_VER % 100)
@@ -597,11 +561,10 @@
 /** @brief Compiler could not be determined. */
 #    define AXM_COMPILER_UNKNOWN 1
 #endif
-
 /** @} */
 
 
-/* ========================================================================
+/**
  * @defgroup AXM_CXX_FEATURES C++ Language Features
  * @brief Compile-time detection of C++ standard features.
  *
@@ -620,8 +583,7 @@
  * @endcode
  *
  * @{
- * ======================================================================== */
-
+ */
 #if AXM_CXX_STANDARD >= 202400L
 /** @brief C++26 or later is available. */
 #    define AXM_HAS_CXX26 1
@@ -656,11 +618,10 @@
 /** @brief C++98 (original standard) or later. */
 #    define AXM_HAS_CXX98 1
 #endif
-
 /** @} */
 
 
-/* ========================================================================
+/**
  * @defgroup AXM_BUILD_TYPE Build Type Detection
  * @brief Detects debug vs. release build configuration.
  *
@@ -669,8 +630,7 @@
  * AXM_BUILD_DEBUG or AXM_BUILD_RELEASE is defined.
  *
  * @{
- * ======================================================================== */
-
+ */
 #if defined(NDEBUG)
 /** @brief Release build (NDEBUG defined, assertions disabled). */
 #    define AXM_BUILD_RELEASE 1
@@ -678,11 +638,10 @@
 /** @brief Debug build (NDEBUG not defined, assertions enabled). */
 #    define AXM_BUILD_DEBUG 1
 #endif
-
 /** @} */
 
 
-/* ========================================================================
+/**
  * @defgroup AXM_SANITIZERS Sanitizer Detection
  * @brief Detects active code sanitizers (ASAN, TSAN, UBSAN, etc.).
  *
@@ -701,8 +660,7 @@
  * @endcode
  *
  * @{
- * ======================================================================== */
-
+ */
 #if defined(__has_feature)
 #    if __has_feature(address_sanitizer)
 /** @brief AddressSanitizer (ASAN) is active. */
@@ -744,11 +702,10 @@
     || defined(AXM_SANITIZER_LSAN)
 #    define AXM_SANITIZERS_ACTIVE 1
 #endif
-
 /** @} */
 
 
-/* ========================================================================
+/**
  * @defgroup AXM_ENDIANNESS Byte Order (Endianness) Detection
  * @brief Detects the byte order of the target platform.
  *
@@ -760,8 +717,7 @@
  * PDP-endian (middle-endian) was used on DEC PDP-11 systems.
  *
  * @{
- * ======================================================================== */
-
+ */
 #if defined(__BYTE_ORDER__)
 #    if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
 /** @brief Platform uses little-endian byte order. */
@@ -805,11 +761,10 @@
 /** @brief Byte order could not be determined. */
 #    define AXM_ENDIAN_UNKNOWN 1
 #endif
-
 /** @} */
 
 
-/* ========================================================================
+/**
  * @defgroup AXM_POINTER_WIDTH Pointer Width Detection
  * @brief Detects 32-bit vs. 64-bit pointer width.
  *
@@ -820,8 +775,7 @@
  * Use AXM_32BIT / AXM_64BIT for simple conditional compilation.
  *
  * @{
- * ======================================================================== */
-
+ */
 #if defined(AXM_ARCH_X64)                                                                          \
     || defined(AXM_ARCH_ARM64)                                                                     \
     || defined(AXM_ARCH_PPC64)                                                                     \
@@ -863,11 +817,10 @@
 #        endif
 #    endif
 #endif
-
 /** @} */
 
 
-/* ========================================================================
+/**
  * @defgroup AXM_SIMD_EXTENSIONS SIMD/Vector Extension Detection
  * @brief Detects available SIMD instruction sets.
  *
@@ -910,8 +863,7 @@
  * @endcode
  *
  * @{
- * ======================================================================== */
-
+ */
 #if defined(AXM_ARCH_X86_FAMILY)
 #    if defined(__AVX512F__)
 /** @brief AVX-512 Foundation is available. */
@@ -1040,11 +992,10 @@
 #        define AXM_SIMD_WASM128 1
 #    endif
 #endif
-
 /** @} */
 
 
-/* ========================================================================
+/**
  * @defgroup AXM_PLATFORM_WARNINGS Platform Detection Warnings
  * @brief Compile-time warnings for unrecognized or unusual platforms.
  *
@@ -1055,8 +1006,7 @@
  * developer to verify the configuration manually.
  *
  * @{
- * ======================================================================== */
-
+ */
 #if defined(AXM_OS_UNKNOWN)
 #    if defined(AXM_COMPILER_GCC_LIKE)
 #        pragma message                                                                            \
@@ -1094,7 +1044,6 @@
 #        pragma message("AXM: Endianness could not be determined.")
 #    endif
 #endif
-
 /** @} */
 
 #endif

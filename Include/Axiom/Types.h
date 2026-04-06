@@ -53,7 +53,6 @@
  *
  * **Compile-time verification:**
  *   - static_assert (C++11) checks verify all sizes are correct
- *   - Pre-C++11 compilers use linker-level verification tricks
  *
  * @see System.h - Platform detection
  * @see Attributes.h - Alignment control macros (AXM_ALIGNAS, AXM_ALIGNOF)
@@ -74,7 +73,6 @@
  * For MSVC before 2010, we need manual type definitions.
  */
 #if !defined(__STDC_INT8_MAX__) && defined(_MSC_VER) && _MSC_VER < 1600
-/* MSVC 6.0 through 2008 need manual type definitions */
 #    if !defined(uint8_t)
 #        define uint8_t        unsigned char
 #        define int8_t         signed char
@@ -108,7 +106,7 @@
 
 namespace AXM {
 
-    /* ========================================================================
+    /**
      * @defgroup AXM_EXACT_WIDTH_TYPES Exact-Width Integer Types
      * @brief Fixed-size integer types with guaranteed widths.
      *
@@ -125,10 +123,8 @@ namespace AXM {
      * - Range [-2^(N-1), 2^(N-1) - 1] in two's complement
      * - Use for: offsets, differences, error codes, signed coordinates
      * - Overflow is undefined behaviour (in C++20+: defined as wrapping)
-     *
      * @{
-     * ======================================================================== */
-
+     */
     /** @brief Unsigned 8-bit integer (0–255). */
     using u8  = uint8_t;
     /** @brief Unsigned 16-bit integer (0–65,535). */
@@ -146,11 +142,10 @@ namespace AXM {
     using i32 = int32_t;
     /** @brief Signed 64-bit integer (-9,223,372,036,854,775,808–9,223,372,036,854,775,807). */
     using i64 = int64_t;
-
     /** @} */
 
 
-    /* ========================================================================
+    /**
      * @defgroup AXM_FAST_WIDTH_TYPES Fast Integer Types
      * @brief CPU-native integer types (at least N bits, possibly wider).
      *
@@ -169,10 +164,8 @@ namespace AXM {
      * u64f sum = 0;
      * for (const auto& elem : data) sum += elem;
      * @endcode
-     *
      * @{
-     * ======================================================================== */
-
+     */
     /** @brief Unsigned fast integer, at least 8 bits. */
     using u8f  = uint_fast8_t;
     /** @brief Unsigned fast integer, at least 16 bits. */
@@ -190,11 +183,10 @@ namespace AXM {
     using i32f = int_fast32_t;
     /** @brief Signed fast integer, at least 64 bits. */
     using i64f = int_fast64_t;
-
     /** @} */
 
 
-    /* ========================================================================
+    /**
      * @defgroup AXM_LEAST_WIDTH_TYPES Least-Width Integer Types
      * @brief Smallest integer types that hold at least N bits.
      *
@@ -205,10 +197,8 @@ namespace AXM {
      *
      * **Primary use:** dense storage where minimising memory > access speed.
      * **Rarely needed:** exact-width types (u8–u64) are almost always better.
-     *
      * @{
-     * ======================================================================== */
-
+     */
     /** @brief Unsigned least integer, at least 8 bits. */
     using u8l  = uint_least8_t;
     /** @brief Unsigned least integer, at least 16 bits. */
@@ -226,11 +216,10 @@ namespace AXM {
     using i32l = int_least32_t;
     /** @brief Signed least integer, at least 64 bits. */
     using i64l = int_least64_t;
-
     /** @} */
 
 
-    /* ========================================================================
+    /**
      * @defgroup AXM_POINTER_WIDTH_TYPES Pointer-Width and Address Types
      * @brief Integers and pointers sized to match architecture (32 or 64-bit).
      *
@@ -271,34 +260,26 @@ namespace AXM {
      *   @code
      *   void* memcpy_custom(byte* dst, const byte* src, usize len) { }
      *   @endcode
-     *
      * @{
-     * ======================================================================== */
-
+     */
     /** @brief Typeless (void) pointer. */
-    using vptr = void*;
-
+    using vptr  = void*;
     /** @brief Unsigned pointer-width integer (size_t equivalent).
      *  Use for sizes, lengths, array indices. */
     using usize = size_t;
-
     /** @brief Signed pointer-width integer (ptrdiff_t equivalent).
      *  Use for pointer differences and signed offsets. */
     using isize = ptrdiff_t;
-
     /** @brief Unsigned integer wide enough to hold any pointer value. */
-    using uptr = uintptr_t;
-
+    using uptr  = uintptr_t;
     /** @brief Signed integer wide enough to hold any pointer value. */
-    using iptr = intptr_t;
-
+    using iptr  = intptr_t;
     /** @brief Alias for u8, emphasizing a raw memory byte. */
-    using byte = uint8_t;
-
+    using byte  = uint8_t;
     /** @} */
 
 
-    /* ========================================================================
+    /**
      * @defgroup AXM_FLOATING_POINT Floating-Point Types
      * @brief IEEE 754 floating-point types and extended precision.
      *
@@ -324,18 +305,14 @@ namespace AXM {
      * **Note:** long double was intentionally excluded from original Types.h
      *   because its size varies wildly. f80 provides an explicit extended-precision
      *   alternative when truly needed, with awareness of portability issues.
-     *
      * @{
-     * ======================================================================== */
-
+     */
     /** @brief IEEE 754 single-precision floating-point (32 bits).
      *  ~7 decimal digits, ±3.4 × 10^38. */
     using f32 = float;
-
     /** @brief IEEE 754 double-precision floating-point (64 bits).
      *  ~15 decimal digits, ±1.8 × 10^308. */
     using f64 = double;
-
 /** @brief Extended-precision floating-point (x87 extended, ~10–16 bytes).
  *  @warning Portability is poor. May not exist, may equal f64, or be 128-bit.
  *  Only use for x87-specific code or when legacy math libraries require it.
@@ -347,11 +324,10 @@ namespace AXM {
 #else
     using f80 = double; /* Fallback: extended precision not available */
 #endif
-
     /** @} */
 
 
-    /* ========================================================================
+    /**
      * @defgroup AXM_BOOLEAN Boolean Types
      * @brief Explicitly sized boolean values.
      *
@@ -373,20 +349,16 @@ namespace AXM {
      * // For graphics APIs expecting 32-bit booleans
      * b32 vulkan_bool = VK_TRUE;  // Actually 1 (u32)
      * @endcode
-     *
      * @{
-     * ======================================================================== */
-
+     */
     /** @brief 8-bit boolean (single byte, suitable for packed structs). */
-    using b8 = uint8_t;
-
+    using b8  = uint8_t;
     /** @brief 32-bit boolean (4 bytes, for graphics/OS APIs). */
     using b32 = uint32_t;
-
     /** @} */
 
 
-    /* ========================================================================
+    /**
      * @defgroup AXM_CHARACTER Character and String Unit Types
      * @brief Explicitly sized character types for text and Unicode.
      *
@@ -411,31 +383,25 @@ namespace AXM {
      * // Windows wide-character API (old-style, for legacy code)
      * LPCWSTR path = L"C:\\Users";  // wc* on Windows
      * @endcode
-     *
      * @{
-     * ======================================================================== */
-
+     */
     /** @brief 8-bit character (char), for UTF-8 and ASCII.
      *  Preferred for modern string literals and UTF-8 processing. */
-    using c8 = char;
-
+    using c8  = char;
     /** @brief 16-bit character (char16_t), for UTF-16 strings. */
     using c16 = char16_t;
-
     /** @brief 32-bit character (char32_t), for UTF-32 strings.
      *  Fixed-width code points; ideal for random-access processing. */
     using c32 = char32_t;
-
     /** @brief Wide character (wchar_t), platform-dependent width.
      *  Usually 16-bit on Windows, 32-bit on Unix.
      *  Avoid in portable code; use c16 or c32 instead.
      *  Only use when required by OS APIs (Win32 W-functions). */
-    using wc = wchar_t;
-
+    using wc  = wchar_t;
     /** @} */
 
 
-    /* ========================================================================
+    /**
      * @defgroup AXM_STATIC_ASSERTIONS Compile-Time Size Verification
      * @brief Verifies type sizes at compile time.
      *
@@ -448,12 +414,8 @@ namespace AXM {
      * If any check fails, compilation is halted with a clear diagnostic.
      * This catches ABI mismatches, misconfigured toolchains, and exotic
      * hardware without the expected integer widths.
-     *
      * @{
-     * ======================================================================== */
-
-    /** @cond INTERNAL */
-
+     */
 #if defined(AXM_HAS_CXX11)
     /** Verify exact-width unsigned integers. */
     static_assert(sizeof(u8) == 1, "AXM: u8  must be 1 byte");
@@ -476,13 +438,8 @@ namespace AXM {
     static_assert(sizeof(isize) == sizeof(vptr), "AXM: isize must match pointer width");
     static_assert(sizeof(uptr) == sizeof(vptr), "AXM: uptr must match pointer width");
     static_assert(sizeof(iptr) == sizeof(vptr), "AXM: iptr must match pointer width");
-
 #endif
-
-    /** @endcond */
-
     /** @} */
-
 }
 
 #endif
