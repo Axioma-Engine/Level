@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.21)
-set(CMAKE_CXX_STANDARD          17)
+set(CMAKE_CXX_STANDARD          98)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 file(TO_CMAKE_PATH "$ENV{HOME}" _HOME_PATH)
@@ -14,18 +14,11 @@ Axiom_RegisterNativeBuildType()
 
 project(Level LANGUAGES CXX VERSION 1.0.0)
 add_library(Level STATIC
-    Source/log.cpp
 )
 target_compile_definitions(Level PRIVATE AXM_STATIC_BUILD)
 Axiom_DetectCompiler()
 Axiom_SetupProject(Level TYPE PLUGIN)
 Axiom_SetupWarnings(Level)
-Axiom_SetupOptimization(Level LTO)
+Axiom_SetupOptimization(Level)
 Axiom_SetupCompileCommands(SYMLINK)
 Axiom_SetupInstall(Level TYPE PLUGIN)
-
-Axiom_SetupExampleProject(Level)
-Axiom_SetupProject(Example TYPE PROJECT CUSTOM_PROJECT_STRUCTURE)
-Axiom_SetupWarnings(Example)
-Axiom_SetupOptimization(Example)
-Axiom_SetupSanitizers(Example ASAN UBSAN)
