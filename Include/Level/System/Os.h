@@ -41,12 +41,6 @@
 #ifndef AXM_LVL_SYSTEM_OS_H
 #define AXM_LVL_SYSTEM_OS_H
 
-int test() {
-    int x = 1;
-    if (x == 0) return 1;
-    return 0;
-}
-
 /** Operating-system detection entry point. */
 #if defined(_WIN32) || defined(_WIN64)
 #    define AXM_OS_WINDOWS 1
