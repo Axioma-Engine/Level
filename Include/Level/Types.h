@@ -17,7 +17,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "../System/Cpp.h" // IWYU pragma: keep
+#include "Utils.h"
 
 namespace AXM {
 
@@ -29,10 +29,10 @@ namespace AXM {
      * formats, network protocols, serialization, and hashing. They offer
      * predictable behaviour across compilers and architectures.
      */
-    typedef uint8_t  u8;
-    typedef uint16_t u16;
-    typedef uint32_t u32;
-    typedef uint64_t u64;
+    AXM_ALIAS(uint8_t, u8);
+    AXM_ALIAS(uint16_t, u16);
+    AXM_ALIAS(uint32_t, u32);
+    AXM_ALIAS(uint64_t, u64);
 
     /**
      * @brief Fixed-width signed integers.
@@ -41,10 +41,10 @@ namespace AXM {
      * you need portable, predictable signed integer behaviour and clearly
      * defined storage sizes in APIs, arithmetic, or on-disk representations.
      */
-    typedef int8_t  i8;
-    typedef int16_t i16;
-    typedef int32_t i32;
-    typedef int64_t i64;
+    AXM_ALIAS(int8_t, i8);
+    AXM_ALIAS(int16_t, i16);
+    AXM_ALIAS(int32_t, i32);
+    AXM_ALIAS(int64_t, i64);
 
     /**
      * @brief Fast integer types (at least N bits) — performance-oriented.
@@ -54,15 +54,15 @@ namespace AXM {
      * are appropriate when performance is a higher priority than exact layout
      * or binary compatibility.
      */
-    typedef uint_fast8_t  u8f;
-    typedef uint_fast16_t u16f;
-    typedef uint_fast32_t u32f;
-    typedef uint_fast64_t u64f;
+    AXM_ALIAS(uint_fast8_t, u8f);
+    AXM_ALIAS(uint_fast16_t, u16f);
+    AXM_ALIAS(uint_fast32_t, u32f);
+    AXM_ALIAS(uint_fast64_t, u64f);
 
-    typedef int_fast8_t  i8f;
-    typedef int_fast16_t i16f;
-    typedef int_fast32_t i32f;
-    typedef int_fast64_t i64f;
+    AXM_ALIAS(int_fast8_t, i8f);
+    AXM_ALIAS(int_fast16_t, i16f);
+    AXM_ALIAS(int_fast32_t, i32f);
+    AXM_ALIAS(int_fast64_t, i64f);
 
     /**
      * @brief Smallest integer types (at least N bits) — memory-oriented.
@@ -73,15 +73,15 @@ namespace AXM {
      * but are not intended for persistent or network formats that depend on
      * exact byte layouts.
      */
-    typedef uint_least8_t  u8l;
-    typedef uint_least16_t u16l;
-    typedef uint_least32_t u32l;
-    typedef uint_least64_t u64l;
+    AXM_ALIAS(uint_least8_t, u8l);
+    AXM_ALIAS(uint_least16_t, u16l);
+    AXM_ALIAS(uint_least32_t, u32l);
+    AXM_ALIAS(uint_least64_t, u64l);
 
-    typedef int_least8_t  i8l;
-    typedef int_least16_t i16l;
-    typedef int_least32_t i32l;
-    typedef int_least64_t i64l;
+    AXM_ALIAS(int_least8_t, i8l);
+    AXM_ALIAS(int_least16_t, i16l);
+    AXM_ALIAS(int_least32_t, i32l);
+    AXM_ALIAS(int_least64_t, i64l);
 
     /**
      * @brief Pointer-sized and byte-oriented aliases.
@@ -92,12 +92,12 @@ namespace AXM {
      * `byte` for raw byte buffers. These map to platform types and should not
      * be assumed to have fixed numeric widths for persistent layouts.
      */
-    typedef void*     vptr;
-    typedef size_t    usize;
-    typedef ptrdiff_t isize;
-    typedef uintptr_t uptr;
-    typedef intptr_t  iptr;
-    typedef uint8_t   byte;
+    AXM_ALIAS(void*, vptr);
+    AXM_ALIAS(size_t, usize);
+    AXM_ALIAS(ptrdiff_t, isize);
+    AXM_ALIAS(uintptr_t, uptr);
+    AXM_ALIAS(intptr_t, iptr);
+    AXM_ALIAS(uint8_t, byte);
 
     /**
      * @brief Floating-point aliases.
@@ -107,12 +107,12 @@ namespace AXM {
      * provided for extended precision where supported, but may be equivalent
      * to `double` on some platforms.
      */
-    typedef float  f32;
-    typedef double f64;
+    AXM_ALIAS(float, f32);
+    AXM_ALIAS(double, f64);
 #if defined(LDBL_MANT_DIG) && defined(DBL_MANT_DIG) && (LDBL_MANT_DIG > DBL_MANT_DIG)
-    typedef long double f80;
+    AXM_ALIAS(long double, f80);
 #else
-    typedef double f80;
+    AXM_ALIAS(double, f80);
 #endif
 
     /**
@@ -124,30 +124,23 @@ namespace AXM {
      * intended storage width; prefer higher-level string types for text and
      * encoding-aware operations.
      */
-    typedef uint8_t  b8;
-    typedef uint32_t b32;
+    AXM_ALIAS(uint8_t, b8);
+    AXM_ALIAS(uint32_t, b32);
 
-    typedef char           c8;
-    typedef uint_least16_t c16;
-    typedef uint_least32_t c32;
-    typedef wchar_t        wc;
+    AXM_ALIAS(uint_least8_t, c8);
+    AXM_ALIAS(uint_least16_t, c16);
+    AXM_ALIAS(uint_least32_t, c32);
+    AXM_ALIAS(wchar_t, wc);
 
-#if AXM_HAS_CXX11
-    static_assert(sizeof(u8) == 1, "AXM: u8  must be 1 byte");
-    static_assert(sizeof(u16) == 2, "AXM: u16 must be 2 bytes");
-    static_assert(sizeof(u32) == 4, "AXM: u32 must be 4 bytes");
-    static_assert(sizeof(u64) == 8, "AXM: u64 must be 8 bytes");
+    AXM_STATIC_ASSERT_SUPPORT(sizeof(u8) == 1, "AXM: u8  must be 1 byte", u8_not_1_byte);
+    AXM_STATIC_ASSERT_SUPPORT(sizeof(u16) == 2, "AXM: u16 must be 2 bytes", u16_not_2_byte);
+    AXM_STATIC_ASSERT_SUPPORT(sizeof(u32) == 4, "AXM: u32 must be 4 bytes", u32_not_4_byte);
+    AXM_STATIC_ASSERT_SUPPORT(sizeof(u64) == 8, "AXM: u64 must be 8 bytes", u64_not_8_byte);
 
-    static_assert(sizeof(i8) == 1, "AXM: i8  must be 1 byte");
-    static_assert(sizeof(i16) == 2, "AXM: i16 must be 2 bytes");
-    static_assert(sizeof(i32) == 4, "AXM: i32 must be 4 bytes");
-    static_assert(sizeof(i64) == 8, "AXM: i64 must be 8 bytes");
-
-    static_assert(sizeof(b8) == 1, "AXM: b8  must be 1 byte");
-    static_assert(sizeof(b32) == 4, "AXM: b32 must be 4 bytes");
-
-    static_assert(sizeof(c8) == 1, "AXM: c8  must be 1 byte");
-#endif
+    AXM_STATIC_ASSERT_SUPPORT(sizeof(i8) == 1, "AXM: i8  must be 1 byte", u8_not_1_byte);
+    AXM_STATIC_ASSERT_SUPPORT(sizeof(i16) == 2, "AXM: i16 must be 2 bytes", u16_not_2_byte);
+    AXM_STATIC_ASSERT_SUPPORT(sizeof(i32) == 4, "AXM: i32 must be 4 bytes", u32_not_4_byte);
+    AXM_STATIC_ASSERT_SUPPORT(sizeof(i64) == 8, "AXM: i64 must be 8 bytes", u64_not_8_byte);
 }
 
 #endif
