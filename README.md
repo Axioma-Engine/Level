@@ -116,7 +116,7 @@ namespace AXM {
     };
 
     // Use fast types for performance-critical code
-    void process_data(ufast32 count) {
+    void process_data(u32f count) {
         // ...
     }
 }
@@ -161,12 +161,6 @@ u32 expected = 5, desired = 10;
 AXM_LVL_ATOMIC_COMPARE_EXCHANGE(&counter, expected, desired);
 ```
 
-## Build Requirements
-
-- **CMake** 3.21+
-- **C++ compatible compiler** (GCC 4.8+, Clang 3.3+, MSVC 2015+)
-- **Axiom CMake infrastructure** (AxiomFunctions module)
-
 ## Building
 
 The library is header-only and requires no compilation:
@@ -198,10 +192,6 @@ Level is registered as an Axiom plugin and integrates with the Axiom build syste
 ## Dependencies
 
 - None (standard library only: `<stdint.h>`, `<stddef.h>`, `<float.h>`)
-
-## License
-
-Part of the Axiom project. See project license for details.
 
 ## Contributing
 
