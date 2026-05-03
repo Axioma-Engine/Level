@@ -116,8 +116,9 @@
 #elif AXM_HAS_CPP_ATTRIBUTE(assume)
 #    define AXM_UNREACHABLE() [[assume(false)]]
 #else
-#    include <stdlib.h> // IWYU pragma: keep
-#    define AXM_UNREACHABLE() abort();
+#    define AXM_UNREACHABLE()                                                                      \
+        do {                                                                                       \
+        } while (0)
 #endif
 
 /** @brief Prevents empty base class optimization (C++20). */
@@ -153,8 +154,9 @@
 #elif AXM_HAS_BUILTIN(__builtin_trap)
 #    define AXM_DEBUG_TRAP __builtin_trap()
 #else
-#    include <stdlib.h>
-#    define AXM_DEBUG_TRAP abort()
+#    define AXM_DEBUG_TRAP                                                                         \
+        do {                                                                                       \
+        } while (0)
 #endif
 /** @} */
 

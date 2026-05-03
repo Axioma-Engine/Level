@@ -37,6 +37,14 @@
 
 #include "../Features.h"
 #include "../System/Cpp.h" // IWYU pragma: keep
+
+/** @brief Marks dependency chain in lock-free programming (C++11). */
+#if AXM_HAS_CPP_ATTRIBUTE(carries_dependency)
+#    define AXM_CARRIES_DEPENDENCY [[carries_dependency]]
+#else
+#    define AXM_CARRIES_DEPENDENCY
+#endif
+
 #if AXM_HAS_CPP_ATTRIBUTE(deprecated)
 #    define AXM_DEPRECATED          [[deprecated]]
 #    define AXM_DEPRECATED_MSG(msg) [[deprecated(msg)]]
@@ -93,8 +101,9 @@
 #if AXM_HAS_CPP_ATTRIBUTE(assume)
 #    define AXM_UNREACHABLE() [[assume(false)]]
 #else
-#    include <stdlib.h> // IWYU pragma: keep
-#    define AXM_UNREACHABLE() abort();
+#    define AXM_UNREACHABLE()                                                                      \
+        do {                                                                                       \
+        } while (0)
 #endif
 
 /** @brief Prevents empty base class optimization (C++20). */
@@ -125,7 +134,9 @@
  * @brief Triggers debugger breakpoint or trap.
  * @{
  */
-#define AXM_DEBUG_TRAP
+#define AXM_DEBUG_TRAP                                                                             \
+    do {                                                                                           \
+    } while (0)
 /** @} */
 
 /** @defgroup FunctionProperties Function Property Hints

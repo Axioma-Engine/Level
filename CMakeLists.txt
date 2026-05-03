@@ -12,10 +12,10 @@ include(AxiomFunctions REQUIRED)
 Axiom_UseToolchain("${CMAKE_SOURCE_DIR}/clang-gnu_Toolchain.cmake")
 Axiom_RegisterNativeBuildType()
 
-project(Level LANGUAGES CXX VERSION 1.0.0)
+project(Level LANGUAGES CXX VERSION 1.0.1)
 add_library(Level INTERFACE
 )
 Axiom_DetectCompiler()
 Axiom_SetupProject(Level HEADER_ONLY TYPE PLUGIN)
 Axiom_SetupCompileCommands(SYMLINK)
-Axiom_SetupInstall(Level TYPE PLUGIN VERSION 1.0.0 HEADER_ONLY)
+Axiom_SetupInstall(Level TYPE PLUGIN VERSION 1.0.1 HEADER_ONLY)

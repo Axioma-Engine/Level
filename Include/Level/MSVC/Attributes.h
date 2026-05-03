@@ -39,6 +39,13 @@
 #include "../Features.h"
 #include "../System/Cpp.h" // IWYU pragma: keep
 
+/** @brief Marks dependency chain in lock-free programming (C++11). */
+#if AXM_HAS_CPP_ATTRIBUTE(carries_dependency)
+#    define AXM_CARRIES_DEPENDENCY [[carries_dependency]]
+#else
+#    define AXM_CARRIES_DEPENDENCY
+#endif
+
 /** @brief Marks code as deprecated (C++14). Optional message version: AXM_DEPRECATED_MSG. */
 #if AXM_HAS_CPP_ATTRIBUTE(deprecated)
 #    define AXM_DEPRECATED          [[deprecated]]
@@ -76,7 +83,7 @@
 #if AXM_HAS_CPP_ATTRIBUTE(fallthrough)
 #    define AXM_FALLTHROUGH [[fallthrough]]
 #else
-#    define AXM_FALLTHROUGH __fallthrough
+#    define AXM_FALLTHROUGH
 #endif
 
 /** @brief Marks branch as likely/unlikely to be taken (C++20). */
@@ -99,8 +106,9 @@
 #if AXM_HAS_CPP_ATTRIBUTE(assume)
 #    define AXM_UNREACHABLE() [[assume(false)]]
 #else
-#    include <stdlib.h> // IWYU pragma: keep
-#    define AXM_UNREACHABLE() abort();
+#    define AXM_UNREACHABLE()                                                                      \
+        do {                                                                                       \
+        } while (0)
 #endif
 
 /** @brief Prevents empty base class optimization (C++20). */
@@ -305,7 +313,7 @@ namespace AXM {
 /** @brief Current function name string. */
 #define AXM_FUNC_NAME __func__
 /** @brief Current function signature string. */
-#define AXM_FUNC_SIG  __func__
+#define AXM_FUNC_SIG  __FUNCSIG__
 /** @brief Current source line number. */
 #define AXM_LINE      __LINE__
 /** @} */

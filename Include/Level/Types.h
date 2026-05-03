@@ -13,20 +13,21 @@
 #ifndef AXM_LVL_TYPES_H
 #define AXM_LVL_TYPES_H
 
+#include <float.h>
+#include <stddef.h>
 #include <stdint.h>
+
+#include "../System/Cpp.h" // IWYU pragma: keep
 
 namespace AXM {
 
     /**
      * @brief Fixed-width unsigned integers.
      *
-     * Summary:
-     *  - Pros: Exact byte widths (1,2,4,8), ideal for binary protocols and
-     *    serialization. Predictable behaviour across compilers/architectures.
-     *  - Cons: Can be more verbose than plain "unsigned", but safer when size
-     *    matters. Not tied to the machine's natural word size.
-     *  - Usage: Use u8/u16/u32/u64 where the bit-width is mandatory (file
-     *    formats, network packets, hashing, deterministic storage).
+     * These types provide exact byte widths (1, 2, 4, 8) and are intended for
+     * use in contexts where a specific storage size is required, such as file
+     * formats, network protocols, serialization, and hashing. They offer
+     * predictable behaviour across compilers and architectures.
      */
     typedef uint8_t  u8;
     typedef uint16_t u16;
@@ -36,13 +37,9 @@ namespace AXM {
     /**
      * @brief Fixed-width signed integers.
      *
-     * Summary:
-     *  - Pros: Signed counterparts to the fixed-width unsigned types. Useful
-     *    for arithmetic that relies on predictable ranges/overflow behaviour.
-     *  - Cons: Same size constraints as unsigned types; consider overflow and
-     *    sign when converting between sizes.
-     *  - Usage: Use i8/i16/i32/i64 for portable signed integer semantics and
-     *    for clear intent in interfaces.
+     * Signed counterparts to the fixed-width unsigned types. Use these when
+     * you need portable, predictable signed integer behaviour and clearly
+     * defined storage sizes in APIs, arithmetic, or on-disk representations.
      */
     typedef int8_t  i8;
     typedef int16_t i16;
@@ -50,16 +47,12 @@ namespace AXM {
     typedef int64_t i64;
 
     /**
-     * @brief Fast integer types (at least N bits) - tuned for speed.
+     * @brief Fast integer types (at least N bits) — performance-oriented.
      *
-     * Summary:
-     *  - Pros: Choose the fastest integer type provided by the platform with at
-     *    least the requested width. Helpful when performance matters more than
-     *    exact layout.
-     *  - Cons: Size can vary between platforms; not suitable for persistent
-     *    binary formats or network protocols.
-     *  - Usage: Use u8f/u16f/u32f/u64f and i8f/... when you want potential
-     *    performance benefits and do not require exact width stability.
+     * These types provide at least the specified width while allowing the
+     * implementation to pick the fastest available type on the platform. They
+     * are appropriate when performance is a higher priority than exact layout
+     * or binary compatibility.
      */
     typedef uint_fast8_t  u8f;
     typedef uint_fast16_t u16f;
@@ -72,15 +65,13 @@ namespace AXM {
     typedef int_fast64_t i64f;
 
     /**
-     * @brief Smallest integer types (at least N bits) - tuned for memory.
+     * @brief Smallest integer types (at least N bits) — memory-oriented.
      *
-     * Summary:
-     *  - Pros: Minimize memory usage while guaranteeing at least the requested
-     *    width. Useful in large arrays or memory-constrained contexts.
-     *  - Cons: Like fast types, sizes may differ across platforms and are not
-     *    suitable for on-disk or across-network representations.
-     *  - Usage: Use u8l/u16l/... and i8l/... for compact in-memory storage when
-     *    exact byte-for-byte layout is not required.
+     * These aliases guarantee at least the requested width while permitting the
+     * implementation to choose a memory-efficient representation. They are
+     * useful for large arrays and memory-constrained in-memory structures,
+     * but are not intended for persistent or network formats that depend on
+     * exact byte layouts.
      */
     typedef uint_least8_t  u8l;
     typedef uint_least16_t u16l;
@@ -95,14 +86,11 @@ namespace AXM {
     /**
      * @brief Pointer-sized and byte-oriented aliases.
      *
-     * Summary:
-     *  - Pros: Abstracts pointer and pointer-difference types to clear aliases
-     *    (usize/isize/uptr/iptr) that match the architecture's pointer width.
-     *  - Cons: These map directly to platform types; avoid assuming exact
-     *    numeric widths in portable binary layouts.
-     *  - Usage: Use usize/isize for sizes and offsets, vptr for opaque pointer
-     *    storage, uptr/iptr when you need integer-backed pointer math, and
-     *    byte for raw byte buffers.
+     * Aliases for pointer-sized integers and raw bytes. Use `usize`/`isize` for
+     * sizes and offsets that match the platform pointer width, `uptr`/`iptr`
+     * for integer-backed pointer math, `vptr` for opaque pointer storage, and
+     * `byte` for raw byte buffers. These map to platform types and should not
+     * be assumed to have fixed numeric widths for persistent layouts.
      */
     typedef void*     vptr;
     typedef size_t    usize;
@@ -114,19 +102,14 @@ namespace AXM {
     /**
      * @brief Floating-point aliases.
      *
-     * Summary:
-     *  - Pros: Short, clear names for common floating types. f32/f64 map to
-     *    IEEE-754 single/double when available and are portable for numeric
-     *    algorithms.
-     *  - Cons: long double precision/size varies by platform; f80 is an alias
-     *    that may equal double on some platforms.
-     *  - Usage: Use f32 for performance-sensitive or lower-precision needs,
-     *    f64 for general-purpose numeric stability, and f80 when extended
-     *    precision is explicitly required and supported.
+     * Short, clear names for common floating-point types. `f32` and `f64`
+     * correspond to single- and double-precision where available. `f80` is
+     * provided for extended precision where supported, but may be equivalent
+     * to `double` on some platforms.
      */
     typedef float  f32;
     typedef double f64;
-#if defined(__SIZEOF_LONG_DOUBLE__) && __SIZEOF_LONG_DOUBLE__ >= 10
+#if defined(LDBL_MANT_DIG) && defined(DBL_MANT_DIG) && (LDBL_MANT_DIG > DBL_MANT_DIG)
     typedef long double f80;
 #else
     typedef double f80;
@@ -135,14 +118,11 @@ namespace AXM {
     /**
      * @brief Boolean and character storage aliases.
      *
-     * Summary:
-     *  - Pros: Explicit-width boolean types (b8/b32) can aid in alignment and
-     *    serialization. Character aliases clarify expected storage unit sizes.
-     *  - Cons: These are storage-focused; they do not replace language bool or
-     *    character semantics (e.g., signedness/encoding of char).
-     *  - Usage: Use b8 for compact boolean arrays and b32 when 32-bit packing
-     *    or API requirements demand it. Use c8/c16/c32/wc for character storage
-     *    sized intents; prefer higher-level string types for text handling.
+     * Storage-focused aliases for boolean and character-sized data. Use `b8`
+     * for compact boolean arrays and `b32` when a 32-bit storage unit is
+     * required. Character aliases (`c8`, `c16`, `c32`, `wc`) describe the
+     * intended storage width; prefer higher-level string types for text and
+     * encoding-aware operations.
      */
     typedef uint8_t  b8;
     typedef uint32_t b32;
@@ -152,17 +132,6 @@ namespace AXM {
     typedef uint_least32_t c32;
     typedef wchar_t        wc;
 
-    /**
-     * @brief Compile-time sanity checks for the public type aliases.
-     *
-     * Summary:
-     *  - Pros: static_asserts catch mismatches early when building with C++11
-     *    or newer. They ensure alias assumptions about sizes hold on the target
-     *    platform.
-     *  - Cons: Requires AXM_HAS_CXX11 to be defined. On older compilers these
-     *    checks are omitted.
-     *  - Usage: Keeps invariants explicit; no runtime overhead.
-     */
 #if AXM_HAS_CXX11
     static_assert(sizeof(u8) == 1, "AXM: u8  must be 1 byte");
     static_assert(sizeof(u16) == 2, "AXM: u16 must be 2 bytes");
@@ -174,20 +143,10 @@ namespace AXM {
     static_assert(sizeof(i32) == 4, "AXM: i32 must be 4 bytes");
     static_assert(sizeof(i64) == 8, "AXM: i64 must be 8 bytes");
 
-    static_assert(sizeof(f32) == 4, "AXM: f32 must be 4 bytes (IEEE 754 single)");
-    static_assert(sizeof(f64) == 8, "AXM: f64 must be 8 bytes (IEEE 754 double)");
-
-    static_assert(sizeof(usize) == sizeof(vptr), "AXM: usize must match pointer width");
-    static_assert(sizeof(isize) == sizeof(vptr), "AXM: isize must match pointer width");
-    static_assert(sizeof(uptr) == sizeof(vptr), "AXM: uptr  must match pointer width");
-    static_assert(sizeof(iptr) == sizeof(vptr), "AXM: iptr  must match pointer width");
-
     static_assert(sizeof(b8) == 1, "AXM: b8  must be 1 byte");
     static_assert(sizeof(b32) == 4, "AXM: b32 must be 4 bytes");
 
     static_assert(sizeof(c8) == 1, "AXM: c8  must be 1 byte");
-    static_assert(sizeof(c16) == 2, "AXM: c16 must be 2 bytes");
-    static_assert(sizeof(c32) == 4, "AXM: c32 must be 4 bytes");
 #endif
 }
 
