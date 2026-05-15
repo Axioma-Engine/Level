@@ -56,7 +56,7 @@
 /** Check for compiler builtin support (e.g., __builtin_expect). */
 #if defined(__has_builtin)
 #    define AXM_HAS_BUILTIN(x) __has_builtin(x)
-#elif defined(AXM_COMPILER_GCC)
+#elif AXM_COMPILER_GCC
 #    define AXM_HAS_BUILTIN(x) 1
 #else
 #    define AXM_HAS_BUILTIN(x) 0

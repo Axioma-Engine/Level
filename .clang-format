@@ -44,8 +44,8 @@ AllowShortLambdasOnASingleLine: All
 AllowShortLoopsOnASingleLine: true
 AllowShortNamespacesOnASingleLine: true
 AlwaysBreakBeforeMultilineStrings: true
-BinPackArguments: false
-BinPackParameters: OnePerLine
+BinPackArguments: true
+BinPackParameters: true
 BitFieldColonSpacing: After
 BraceWrapping:
   AfterCaseLabel: false

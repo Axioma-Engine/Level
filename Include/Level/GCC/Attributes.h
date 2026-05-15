@@ -92,8 +92,8 @@
 #    define AXM_LIKELY(x)   (x) [[likely]]
 #    define AXM_UNLIKELY(x) (x) [[unlikely]]
 #elif AXM_HAS_BUILTIN(__builtin_expect)
-#    define AXM_LIKELY(x)   (__builtin_expect(!!(x), 1))
-#    define AXM_UNLIKELY(x) (__builtin_expect(!!(x), 0))
+#    define AXM_LIKELY(x)   (__builtin_expect(!!(x), true))
+#    define AXM_UNLIKELY(x) (__builtin_expect(!!(x), false))
 #else
 #    define AXM_LIKELY(x)   (x)
 #    define AXM_UNLIKELY(x) (x)
@@ -141,7 +141,7 @@
 #elif AXM_HAS_ATTRIBUTE(nothrow)
 #    define AXM_NOEXCEPT(x) __attribute__((nothrow)) x
 #else
-#    define AXM_NOEXCEPT(x)
+#    define AXM_NOEXCEPT(x) x throw()
 #endif
 
 /** @} */
@@ -361,7 +361,7 @@
 #if AXM_HAS_CXX11
 #    define AXM_NULLPTR nullptr
 #else
-namespace AXM {
+namespace Level {
     class Nullptr {
       public:
         template <class T>
@@ -378,7 +378,7 @@ namespace AXM {
     };
     static const Nullptr NULLPTR = {};
 }
-#    define AXM_NULLPTR AXM::NULLPTR
+#    define AXM_NULLPTR Level::NULLPTR
 #endif
 /** @} */
 
@@ -392,6 +392,8 @@ namespace AXM {
 #define AXM_FUNC_SIG  __PRETTY_FUNCTION__
 /** @brief Current source line number. */
 #define AXM_LINE      __LINE__
+/** @brief Current source file name. */
+#define AXM_FILE      __FILE__
 /** @} */
 
 #endif

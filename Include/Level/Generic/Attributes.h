@@ -125,7 +125,7 @@
 #if AXM_HAS_CXX11
 #    define AXM_NOEXCEPT(x) x noexcept
 #else
-#    define AXM_NOEXCEPT(x)
+#    define AXM_NOEXCEPT(x) x throw()
 #endif
 
 /** @} */
@@ -267,7 +267,7 @@
 #if AXM_HAS_CXX11
 #    define AXM_NULLPTR nullptr
 #else
-namespace AXM {
+namespace Level {
     class Nullptr {
       public:
         template <class T>
@@ -298,6 +298,8 @@ namespace AXM {
 #define AXM_FUNC_SIG  __func__
 /** @brief Current source line number. */
 #define AXM_LINE      __LINE__
+/** @brief Current source file name. */
+#define AXM_FILE      __FILE__
 /** @} */
 
 #endif

@@ -1,62 +1,97 @@
 /**
  * @file Atomic.h (GCC backend)
- * @brief GCC/Clang __atomic_* builtin wrapper macros.
+ * @brief GCC/Clang __atomic_* builtin wrapper functions.
  *
  * This header wraps GCC and Clang's __atomic_* builtins into a unified
  * atomic operation interface compatible with the Level library.
  *
- * Macro hierarchy:
- * - AXM_LVL_ATOMIC_SEQ_* : Memory ordering constants
- *   - AXM_LVL_ATOMIC_SEQ_RELAXED -> __ATOMIC_RELAXED
- *   - AXM_LVL_ATOMIC_SEQ_CONSUME -> __ATOMIC_CONSUME
- *   - AXM_LVL_ATOMIC_SEQ_ACQUIRE -> __ATOMIC_ACQUIRE
- *   - AXM_LVL_ATOMIC_SEQ_RELEASE -> __ATOMIC_RELEASE
- *   - AXM_LVL_ATOMIC_SEQ_ACQ_REL -> __ATOMIC_ACQ_REL
- *   - AXM_LVL_ATOMIC_SEQ_SEQ_CST -> __ATOMIC_SEQ_CST
+ * Namespace hierarchy:
+ * - Level::Atomic:: : Memory ordering constants and atomic operations
+ *   - RELAXED, CONSUME, ACQUIRE, RELEASE, ACQ_REL, SEQ_CST
  *
- * - AXM_LVL_ATOMIC_*_SEQ : Sequentially-explicit operations
- *   - LOAD_SEQ, STORE_SEQ, EXCHANGE_SEQ, COMPARE_EXCHANGE_SEQ
- *   - FETCH_ADD_SEQ, FETCH_SUB_SEQ, FETCH_AND_SEQ, FETCH_OR_SEQ, FETCH_XOR_SEQ
+ * - Level::Atomic::pause() : Pause instruction for spin-wait loops
  *
- * - AXM_LVL_ATOMIC_* : Default sequentially-consistent operations
- *   - LOAD, STORE, EXCHANGE, COMPARE_EXCHANGE
- *   - FETCH_ADD, FETCH_SUB, FETCH_AND, FETCH_OR, FETCH_XOR
+ * - Level::Atomic::load<T>(ptr, seq)
+ * - Level::Atomic::store<T>(ptr, value, seq)
+ * - Level::Atomic::exchange<T>(ptr, value, seq)
+ * - Level::Atomic::compareExchange<T>(ptr, expected, desired, success_seq, failure_seq)
+ * - Level::Atomic::fetchAdd<T>(ptr, value, seq)
+ * - Level::Atomic::fetchSub<T>(ptr, value, seq)
+ * - Level::Atomic::fetchAnd<T>(ptr, value, seq)
+ * - Level::Atomic::fetchOr<T>(ptr, value, seq)
+ * - Level::Atomic::fetchXor<T>(ptr, value, seq)
  */
 
 #ifndef AXM_LVL_GCC_ATOMIC_H
 #define AXM_LVL_GCC_ATOMIC_H
 
-// Memory ordering semantics as GCC __ATOMIC_* constants
-#define AXM_LVL_ATOMIC_SEQ_RELAXED __ATOMIC_RELAXED
-#define AXM_LVL_ATOMIC_SEQ_CONSUME __ATOMIC_CONSUME
-#define AXM_LVL_ATOMIC_SEQ_ACQUIRE __ATOMIC_ACQUIRE
-#define AXM_LVL_ATOMIC_SEQ_RELEASE __ATOMIC_RELEASE
-#define AXM_LVL_ATOMIC_SEQ_ACQ_REL __ATOMIC_ACQ_REL
-#define AXM_LVL_ATOMIC_SEQ_SEQ_CST __ATOMIC_SEQ_CST
+#include "../Types.h"
+#include "Attributes.h"
 
-// Sequentially-explicit atomic operations via __atomic_* builtins
-#define AXM_LVL_ATOMIC_LOAD_SEQ(ptr, seq)            __atomic_load_n((ptr), (seq))
-#define AXM_LVL_ATOMIC_STORE_SEQ(ptr, value, seq)    __atomic_store_n((ptr), (value), (seq))
-#define AXM_LVL_ATOMIC_EXCHANGE_SEQ(ptr, value, seq) __atomic_exchange_n((ptr), (value), (seq))
-#define AXM_LVL_ATOMIC_COMPARE_EXCHANGE_SEQ(ptr, expected, desired, success_seq, failure_seq)      \
-    __atomic_compare_exchange_n((ptr), (expected), (desired), 0, (success_seq), (failure_seq))
-#define AXM_LVL_ATOMIC_FETCH_ADD_SEQ(ptr, value, seq) __atomic_fetch_add((ptr), (value), (seq))
-#define AXM_LVL_ATOMIC_FETCH_SUB_SEQ(ptr, value, seq) __atomic_fetch_sub((ptr), (value), (seq))
-#define AXM_LVL_ATOMIC_FETCH_AND_SEQ(ptr, value, seq) __atomic_fetch_and((ptr), (value), (seq))
-#define AXM_LVL_ATOMIC_FETCH_OR_SEQ(ptr, value, seq)  __atomic_fetch_or((ptr), (value), (seq))
-#define AXM_LVL_ATOMIC_FETCH_XOR_SEQ(ptr, value, seq) __atomic_fetch_xor((ptr), (value), (seq))
+namespace Level { namespace Atomic {
 
-// Sequentially-consistent atomic operations (default memory ordering)
-#define AXM_LVL_ATOMIC_LOAD(ptr)            __atomic_load_n((ptr), AXM_LVL_ATOMIC_SEQ_SEQ_CST)
-#define AXM_LVL_ATOMIC_STORE(ptr, value)    __atomic_store_n((ptr), (value), __ATOMIC_SEQ_CST)
-#define AXM_LVL_ATOMIC_EXCHANGE(ptr, value) __atomic_exchange_n((ptr), (value), __ATOMIC_SEQ_CST)
-#define AXM_LVL_ATOMIC_COMPARE_EXCHANGE(ptr, expected, desired)                                    \
-    __atomic_compare_exchange_n(                                                                   \
-        (ptr), (expected), (desired), __ATOMIC_SEQ_CST, AXM_LVL_ATOMIC_SEQ_SEQ_CST)
-#define AXM_LVL_ATOMIC_FETCH_ADD(ptr, value) __atomic_fetch_add((ptr), (value), __ATOMIC_SEQ_CST)
-#define AXM_LVL_ATOMIC_FETCH_SUB(ptr, value) __atomic_fetch_sub((ptr), (value), __ATOMIC_SEQ_CST)
-#define AXM_LVL_ATOMIC_FETCH_AND(ptr, value) __atomic_fetch_and((ptr), (value), __ATOMIC_SEQ_CST)
-#define AXM_LVL_ATOMIC_FETCH_OR(ptr, value)  __atomic_fetch_or((ptr), (value), __ATOMIC_SEQ_CST)
-#define AXM_LVL_ATOMIC_FETCH_XOR(ptr, value) __atomic_fetch_xor((ptr), (value), __ATOMIC_SEQ_CST)
+    static const AXM_CONSTEXPR i32 RELAXED = __ATOMIC_RELAXED;
+    static const AXM_CONSTEXPR i32 CONSUME = __ATOMIC_CONSUME;
+    static const AXM_CONSTEXPR i32 ACQUIRE = __ATOMIC_ACQUIRE;
+    static const AXM_CONSTEXPR i32 RELEASE = __ATOMIC_RELEASE;
+    static const AXM_CONSTEXPR i32 ACQ_REL = __ATOMIC_ACQ_REL;
+    static const AXM_CONSTEXPR i32 SEQ_CST = __ATOMIC_SEQ_CST;
+
+    static inline void pause() {
+#if defined(__i386__) || defined(__x86_64__)
+        __builtin_ia32_pause();
+#elif defined(__arm__) || defined(__aarch64__)
+        __asm__ volatile("yield" ::: "memory");
+#elif defined(__powerpc__) || defined(__ppc__)
+        __builtin_ppc_yield();
+#elif defined(__riscv)
+        __asm__ volatile("pause" ::: "memory");
+#else
+        __asm__ volatile("" ::: "memory");
+#endif
+    }
+
+    template <typename T>
+    static inline T load(T* ptr, i32 seq = __ATOMIC_SEQ_CST) {
+        return __atomic_load_n(ptr, seq);
+    }
+    template <typename T>
+    static inline void store(T* ptr, T value, i32 seq = __ATOMIC_SEQ_CST) {
+        __atomic_store_n(ptr, value, seq);
+    }
+    template <typename T>
+    static inline T exchange(T* ptr, T value, i32 seq = __ATOMIC_SEQ_CST) {
+        return __atomic_exchange_n(ptr, value, seq);
+    }
+    template <typename T>
+    static inline b8 compareExchange(
+        T*  ptr,
+        T*  expected,
+        T   desired,
+        i32 success_seq = __ATOMIC_SEQ_CST,
+        i32 failure_seq = __ATOMIC_RELAXED) {
+        return __atomic_compare_exchange_n(ptr, expected, desired, 0, success_seq, failure_seq);
+    }
+    template <typename T>
+    static inline T fetchAdd(T* ptr, T value, i32 seq = __ATOMIC_SEQ_CST) {
+        return __atomic_fetch_add(ptr, value, seq);
+    }
+    template <typename T>
+    static inline T fetchSub(T* ptr, T value, i32 seq = __ATOMIC_SEQ_CST) {
+        return __atomic_fetch_sub(ptr, value, seq);
+    }
+    template <typename T>
+    static inline T fetchAnd(T* ptr, T value, i32 seq = __ATOMIC_SEQ_CST) {
+        return __atomic_fetch_and(ptr, value, seq);
+    }
+    template <typename T>
+    static inline T fetchOr(T* ptr, T value, i32 seq = __ATOMIC_SEQ_CST) {
+        return __atomic_fetch_or(ptr, value, seq);
+    }
+    template <typename T>
+    static inline T fetchXor(T* ptr, T value, i32 seq = __ATOMIC_SEQ_CST) {
+        return __atomic_fetch_xor(ptr, value, seq);
+    }
+}}
 
 #endif

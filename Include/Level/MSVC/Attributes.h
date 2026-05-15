@@ -67,9 +67,12 @@
 #    else
 #        define AXM_NODISCARD_MSG(msg) [[nodiscard]]
 #    endif
-#else
+#elif (_MSC_VER >= 1700)
 #    define AXM_NODISCARD          _Check_return_
 #    define AXM_NODISCARD_MSG(msg) _Check_return_
+#else
+#    define AXM_NODISCARD
+#    define AXM_NODISCARD_MSG(msg)
 #endif
 
 /** @brief Marks variables/parameters that may be intentionally unused (C++17). */
@@ -132,7 +135,7 @@
 #elif AXM_HAS_DECLSPEC(nothrow)
 #    define AXM_NOEXCEPT(x) __declspec(nothrow) x
 #else
-#    define AXM_NOEXCEPT(x)
+#    define AXM_NOEXCEPT(x) x throw()
 #endif
 
 /** @} */
@@ -285,7 +288,7 @@
 #if AXM_HAS_CXX11
 #    define AXM_NULLPTR nullptr
 #else
-namespace AXM {
+namespace Level {
     class Nullptr {
       public:
         template <class T>
@@ -316,6 +319,8 @@ namespace AXM {
 #define AXM_FUNC_SIG  __FUNCSIG__
 /** @brief Current source line number. */
 #define AXM_LINE      __LINE__
+/** @brief Current source file name. */
+#define AXM_FILE      __FILE__
 /** @} */
 
 #endif
