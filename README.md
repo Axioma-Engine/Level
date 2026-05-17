@@ -1,12 +1,12 @@
-# Level Library
+# Quark Library
 
-**Version:** 1.1.0  
-**Language:** C++ (C++98 and later)  
+**Version:** 1.1.0
+**Language:** C++ (C++98 and later)
 **Type:** Header-only Plugin for Axiom Framework
 
 ## Overview
 
-The **Level** library is a comprehensive, header-only C++ utility library designed as a plugin for the Axiom framework. It provides portable, low-level abstractions for system detection, compiler-specific features, atomic operations, bit manipulation, and SIMD vectorization. Level enables developers to write high-performance, cross-platform C++ code by encapsulating compiler and architecture-specific details behind unified, easy-to-use macros and utilities.
+The **Quark** library is a comprehensive, header-only C++ utility library designed as a plugin for the Axiom framework. It provides portable, low-level abstractions for system detection, compiler-specific features, atomic operations, bit manipulation, and SIMD vectorization. Quark enables developers to write high-performance, cross-platform C++ code by encapsulating compiler and architecture-specific details behind unified, easy-to-use macros and utilities.
 
 ## Key Features
 
@@ -24,7 +24,7 @@ Comprehensive environment detection macros that allow code to adapt to different
   - Version information for conditional compilation
 
 - **C++ Standard Detection** (`System/Cpp.h`)
-  - Language standard level detection (C++98, C++11, C++14, C++17, C++20, etc.)
+  - Language standard quark detection (C++98, C++11, C++14, C++17, C++20, etc.)
   - Feature availability queries (constexpr, threading, etc.)
 
 - **Endianness Detection** (`System/Endian.h`)
@@ -70,7 +70,7 @@ These aliases improve code clarity and ensure portability across 32-bit and 64-b
 Safe concurrent access primitives with memory ordering guarantees:
 
 - **Memory ordering constants:** `RELAXED`, `CONSUME`, `ACQUIRE`, `RELEASE`, `ACQ_REL`, `SEQ_CST`
-- **Core operations:**
+- **Quark operations:**
   - `load<T>()` - Atomic load
   - `store<T>()` - Atomic store
   - `exchange<T>()` - Atomic exchange
@@ -87,26 +87,7 @@ Safe concurrent access primitives with memory ordering guarantees:
 - MSVC: Uses `_Interlocked*` intrinsics
 - Generic: Falls back to C11 `<stdatomic.h>` or unsafe fallbacks
 
-All operations located in `Level::Atomic::` namespace.
-
-### 5. **Bit Operations** (`BitOperations.h`)
-Common bit-manipulation helpers in the `Level::Bits::` namespace with compiler-optimized implementations:
-
-- **Count trailing zeros:** `ctz32(u32)`, `ctz64(u64)` - Returns 32/64 for zero input
-- **Count leading zeros:** `clz32(u32)`, `clz64(u64)` - Returns 32/64 for zero input
-- **Population count:** `popcount32(u32)`, `popcount64(u64)` - Counts the number of set bits
-- **Byte swapping:** `swap16(u16)`, `swap32(u32)`, `swap64(u64)`
-- **Host-to-little-endian:** `htole16(u16)`, `htole32(u32)`, `htole64(u64)`
-- **Little-endian-to-host:** `letoh16(u16)`, `letoh32(u32)`, `letoh64(u64)`
-- **Host-to-big-endian:** `htobe16(u16)`, `htobe32(u32)`, `htobe64(u64)`
-- **Big-endian-to-host:** `betoh16(u16)`, `betoh32(u32)`, `betoh64(u64)`
-
-All functions are static inline and available in the `Level::Bits::` namespace.
-
-**Compiler-specific backends:**
-- GCC/Clang: Uses compiler builtins (`__builtin_ctz`, `__builtin_popcount`, etc.) with portable fallbacks
-- MSVC: Uses MSVC intrinsics (`_BitScanForward`, `__popcnt`, `_byteswap_*`, etc.)
-- Generic: Portable C implementations using De Bruijn sequences and efficient algorithms
+All operations located in `Quark::Atomic::` namespace.
 
 ### 6. **Attributes & Compiler Directives** (`Attributes.h`)
 Unified macros for compiler-specific features and optimizations:
@@ -128,66 +109,6 @@ Unified macros for compiler-specific features and optimizations:
 - MSVC: Support via declspec and pragmas
 - Generic: Minimal fallbacks for unsupported compilers
 
-### 7. **SIMD Vectorization** (`Simd.h` + `SIMD/*.h`)
-Portable, templated SIMD abstractions for efficient vector operations.
-
-**Supported backends:**
-- AVX/AVX2 (256-bit vectors)
-- SSE/SSE2 (128-bit vectors)
-- NEON (ARM 128-bit vectors)
-- Scalar fallback (portable C implementation)
-
-The current SIMD API uses a small, consistent set of templated functions and a
-`Simd<N, T>` union type under the `Level::SIMD` namespace. `N` is the bit
-count and `T` is the element type (e.g., `f32`, `i32`). Backends provide
-specializations that map these templates to the most efficient intrinsics
-available for the target platform.
-
-Primary interface (declared in `Simd.h`):
-
-- `template<usize N, typename T> union Simd;` — vector storage type
-- `load< N, T >(const T* ptr)` / `store< N, T >(T* ptr, const Simd<N,T>&)`
-- `set< N, T >(...)` — several overloads for constructing vectors from scalars
-- Arithmetic: `add< N, T >`, `sub< N, T >`, `mul< N, T >`, `div< N, T >`
-- Unary: `abs< N, T >`, `neg< N, T >`, `sqrt`, `rsqrt`, `reciprocal`
-- Bitwise/logical: `land`, `lor`, `lxor`, `lnot`, `landnot`
-- Shifts: `shl`, `shr`, `sar`
-- Min/Max: `min< N, T >`, `max< N, T >`
-- Comparisons: `cmpEq`, `cmpNe`, `cmpLt`, `cmpLe`, `cmpGt`, `cmpGe`
-- Utilities: `movemask(const Simd<N,T>&)` — extract lane masks
-
-All functions are declared as `inline` templates and implemented in the
-backend headers (`SIMD/AVX`, `SIMD/SSE`, `SIMD/NEON`, `SIMD/Scalar`).
-
-Example usage:
-
-```cpp
-#include <Level/Simd.h>
-using namespace Level::SIMD;
-
-// 4-wide float vectors
-using Vec4f = Simd<128, f32>;
-
-f32 dataA[4] = {1,2,3,4};
-f32 dataB[4] = {5,6,7,8};
-
-Vec4f a = load<128, f32>(dataA);
-Vec4f b = load<128, f32>(dataB);
-Vec4f sum = add<128, f32>(a, b);
-store<4, f32>(dataA, sum); // writes 6,8,10,12 back to dataA
-
-// Construct directly
-Vec4f c = set<128, f32>(1.0f, 2.0f, 3.0f, 4.0f);
-
-// Mask and comparisons
-auto m = cmpGt<128, f32>(sum, c);        // per-lane greater-than mask
-u32 mask = movemask<128, f32>(m);        // platform-independent lane mask
-```
-
-Notes:
-- Implementations are backend-driven; adding new backends (e.g., SVE, RVV)
-    can be done by providing specializations in `Include/Level/SIMD/`.
-
 ### 8. **Utilities** (`Utils.h`)
 Common utility macros and helpers:
 
@@ -202,13 +123,11 @@ Common utility macros and helpers:
 ## Directory Structure
 
 ```
-Level/
-├── Include/Level/
+Quark/
+├── Include/Quark/
 │   ├── Atomic.h              # Atomic operations facade
 │   ├── Attributes.h          # Compiler attributes facade
-│   ├── BitOperations.h       # Bit manipulation facade
 │   ├── Features.h            # Feature detection macros
-│   ├── Simd.h                # SIMD backend selector
 │   ├── System.h              # System detection umbrella header
 │   ├── Types.h               # Type aliases
 │   ├── Utils.h               # Utility macros
@@ -223,20 +142,12 @@ Level/
 │   ├── GCC/                  # GCC/Clang implementations
 │   │   ├── Atomic.h          # __atomic_* builtins
 │   │   ├── Attributes.h      # __attribute__ directives
-│   │   └── BitOperations.h   # __builtin_* functions
 │   ├── MSVC/                 # MSVC-specific implementations
 │   │   ├── Atomic.h          # _Interlocked* intrinsics
 │   │   ├── Attributes.h      # declspec and pragmas
-│   │   └── BitOperations.h   # _BitScan*, __popcnt, etc.
 │   ├── Generic/              # Portable fallbacks
 │   │   ├── Atomic.h          # C11 or safe fallback
 │   │   ├── Attributes.h      # Minimal fallbacks
-│   │   └── BitOperations.h   # Pure C implementations
-│   └── SIMD/                 # SIMD backends
-│       ├── AVX.h             # AVX/AVX2 intrinsics
-│       ├── SSE.h             # SSE/SSE2 intrinsics
-│       ├── NEON.h            # ARM NEON intrinsics
-│       └── Scalar.h          # Portable scalar fallback
 ├── CMakeLists.txt            # Build configuration
 ├── Testing.cpp               # Testing driver (generates compile_commands.json)
 └── README.md                 # This file
@@ -248,22 +159,20 @@ Level/
 
 ```cpp
 // Include everything
-#include <Level/System.h>
-#include <Level/Types.h>
-#include <Level/Attributes.h>
-#include <Level/BitOperations.h>
-#include <Level/Atomic.h>
-#include <Level/Simd.h>
-#include <Level/Utils.h>
+#include <Quark/System.h>
+#include <Quark/Types.h>
+#include <Quark/Attributes.h>
+#include <Quark/Atomic.h>
+#include <Quark/Utils.h>
 
 // Or include specific headers as needed
-#include <Level/Features.h>  // Feature detection only
+#include <Quark/Features.h>  // Feature detection only
 ```
 
 ### Example: System Detection
 
 ```cpp
-#include <Level/System.h>
+#include <Quark/System.h>
 
 // Query platform at compile time
 #if AXM_COMPILER_GCC_LIKE
@@ -296,62 +205,40 @@ Level/
 ### Example: Using Type Aliases
 
 ```cpp
-#include <Level/Types.h>
+#include <Quark/Types.h>
 
 // Portable fixed-width types
-Level::u8 byte = 255;           // Exactly 8 bits
-Level::u32 color = 0xFF0000FF;  // Exactly 32 bits
-Level::i64 timestamp = 123456;  // Exactly 64 bits
+Quark::u8 byte = 255;           // Exactly 8 bits
+Quark::u32 color = 0xFF0000FF;  // Exactly 32 bits
+Quark::i64 timestamp = 123456;  // Exactly 64 bits
 
 // Platform-dependent but optimized
-Level::uptr address = (Level::uptr)&some_var;  // Word-sized unsigned
-Level::f32 value = 3.14f;                      // 32-bit float
-Level::iptr offset = some_ptr - other_ptr;    // Signed pointer-sized integer
+Quark::uptr address = (Quark::uptr)&some_var;  // Word-sized unsigned
+Quark::f32 value = 3.14f;                      // 32-bit float
+Quark::iptr offset = some_ptr - other_ptr;    // Signed pointer-sized integer
 ```
 
 ### Example: Atomic Operations
 
 ```cpp
-#include <Level/Atomic.h>
+#include <Quark/Atomic.h>
 
 // Atomic flag for thread synchronization
 volatile int ready = 0;
 
 // Thread 1: Signal readiness
-Level::Atomic::store<int>(&ready, 1, Level::Atomic::RELEASE);
+Quark::Atomic::store<int>(&ready, 1, Quark::Atomic::RELEASE);
 
 // Thread 2: Wait for signal
-while (Level::Atomic::load<int>(&ready, Level::Atomic::ACQUIRE) == 0) {
-    Level::Atomic::pause();  // Yield CPU
+while (Quark::Atomic::load<int>(&ready, Quark::Atomic::ACQUIRE) == 0) {
+    Quark::Atomic::pause();  // Yield CPU
 }
-```
-
-### Example: Bit Operations
-
-```cpp
-#include <Level/BitOperations.h>
-using namespace Level::Bits;
-
-u32 value = 0x80000000;
-int leading_zeros = clz32(value);      // 0
-int trailing_zeros = ctz32(value);     // 31
-int pop_count = popcount32(0xFF00FF);  // 16
-
-// Endianness conversion
-u32 host_value = 0x12345678;
-u32 big_endian = htobe32(host_value);
-u32 little_endian = htole32(host_value);
-
-// 64-bit operations
-u64 large_value = 0x8000000000000000ULL;
-int clz64_result = clz64(large_value);  // 0
-int ctz64_result = ctz64(large_value);  // 63
 ```
 
 ### Example: Compiler Attributes
 
 ```cpp
-#include <Level/Attributes.h>
+#include <Quark/Attributes.h>
 
 // Force inlining for performance-critical code
 AXM_FORCE_INLINE int hot_path(int x) {
@@ -372,24 +259,10 @@ if (AXM_LIKELY(size > 0)) {
 }
 ```
 
-### Example: SIMD Operations
-
-```cpp
-#include <Level/Simd.h>
-
-// Add four 32-bit integers using SIMD (or scalar fallback)
-Level::V128I32 a = /* ... */;
-Level::V128I32 b = /* ... */;
-Level::V128I32 result = AXM::v128i32Add(a, b);
-
-// Store result back
-AXM::v128i32Store(&output_array[0], result);
-```
-
 ### Example: Feature Detection
 
 ```cpp
-#include <Level/Features.h>
+#include <Quark/Features.h>
 
 // Conditional code based on compiler capabilities
 #if AXM_HAS_ATTRIBUTE(__noreturn__)
@@ -439,7 +312,7 @@ cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON <build_dir>
 
 ## Architecture
 
-Level uses a **facade pattern** with compiler-specific backends:
+Quark uses a **facade pattern** with compiler-specific backends:
 
 1. **Public headers** (e.g., `Atomic.h`, `BitOperations.h`) act as stable facades
 2. Each facade selects a backend at compile time based on `AXM_COMPILER_*` macros
@@ -464,8 +337,8 @@ This design ensures:
 ### Build Steps
 
 ```bash
-# Clone or navigate to the Level directory
-cd Level
+# Clone or navigate to the Quark directory
+cd Quark
 
 # Create and configure build directory
 mkdir -p Build/Debug
@@ -498,7 +371,7 @@ Part of the **Axiom framework** plugin ecosystem. Consult the Axiom documentatio
 ### Compile-Time Platform Selection
 
 ```cpp
-#include <Level/System.h>
+#include <Quark/System.h>
 
 #if AXM_COMPILER_GCC_LIKE
     // GCC/Clang specific
@@ -512,7 +385,7 @@ Part of the **Axiom framework** plugin ecosystem. Consult the Axiom documentatio
 ### Conditional Feature Use
 
 ```cpp
-#include <Level/Features.h>
+#include <Quark/Features.h>
 
 #if AXM_HAS_CPP_ATTRIBUTE(carries_dependency)
 #    define AXM_CARRIES_DEPENDENCY [[carries_dependency]]
@@ -523,33 +396,15 @@ Part of the **Axiom framework** plugin ecosystem. Consult the Axiom documentatio
 #endif
 ```
 
-### Safe Fallback Implementation
-
-```cpp
-#include <Level/BitOperations.h>
-using namespace Level::Bits;
-
-// Automatically uses fastest available implementation
-// GCC: __builtin_clz, Clang: __builtin_clz, MSVC: _BitScanReverse, Other: portable algorithm
-u32 value = 0x80000000;
-int leading_zeros = clz32(value);
-int trailing_zeros = ctz32(value);
-int set_bits = popcount32(0xFF00FF);
-
-// Endianness conversions automatically adapt to platform
-u32 network_order = htobe32(local_value);
-u32 back_to_local = betoh32(network_order);
-```
-
 ## Troubleshooting
 
-### Issue: Undefined symbols in Level::Bits namespace
-- **Cause:** Level headers not in include path or namespace not used
-- **Solution:** Add `Include/` to compiler include paths and use `#include <Level/BitOperations.h>` with `using namespace Level::Bits;` or call functions as `Level::Bits::ctz32(value)`
+### Issue: Undefined symbols in Quark::BitOps namespace
+- **Cause:** Quark headers not in include path or namespace not used
+- **Solution:** Add `Include/` to compiler include paths and use `#include <Quark/BitOperations.h>` with `using namespace Quark::BitOps;` or call functions as `Quark::BitOps::ctz32(value)`
 
 ### Issue: Incorrect endianness conversion results
 - **Cause:** Not including system detection headers or platform detection failing
-- **Solution:** Include `Level/System.h` which detects platform endianness, or check that `AXM_LITTLE_ENDIAN` or `AXM_BIG_ENDIAN` are properly defined
+- **Solution:** Include `Quark/System.h` which detects platform endianness, or check that `AXM_LITTLE_ENDIAN` or `AXM_BIG_ENDIAN` are properly defined
 
 ### Issue: Getting compiler errors in bit operations
 - **Cause:** Potentially incompatible compiler or architecture not fully supported
