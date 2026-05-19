@@ -2,11 +2,24 @@
 
 **Version:** 1.1.0
 **Language:** C++ (C++98 and later)
-**Type:** Header-only Plugin for Axiom Framework
+**Type:** Header-only Plugin for Atom Framework
 
 ## Overview
 
-The **Quark** library is a comprehensive, header-only C++ utility library designed as a plugin for the Axiom framework. It provides portable, low-level abstractions for system detection, compiler-specific features, atomic operations, bit manipulation, and SIMD vectorization. Quark enables developers to write high-performance, cross-platform C++ code by encapsulating compiler and architecture-specific details behind unified, easy-to-use macros and utilities.
+The **Quark** library is a comprehensive, header-only C++ utility library designed as a plugin for the Atom framework. It provides portable, low-level abstractions for system detection, compiler-specific features, atomic operations, bit manipulation, and SIMD vectorization. Quark enables developers to write high-performance, cross-platform C++ code by encapsulating compiler and architecture-specific details behind unified, easy-to-use macros and utilities.
+
+Documentation: All public headers in `Include/Quark/` now include Doxygen-style file comments (see `Include/Quark/Types.h`) to aid automated API documentation generation.
+
+Generating docs (Doxygen):
+
+```bash
+# Create a default Doxyfile and adjust `INPUT` to `Include/Quark`
+doxygen -g Doxyfile
+# Edit `Doxyfile`: set `INPUT = Include/Quark` and `EXTRACT_ALL = YES`
+doxygen Doxyfile
+```
+
+The generated HTML will appear in the `html/` directory by default.
 
 ## Key Features
 
@@ -43,13 +56,13 @@ Comprehensive environment detection macros that allow code to adapt to different
 ### 2. **Feature Detection** (`Features.h`)
 Portable compiler feature-probing helpers that normalize access to compiler capabilities:
 
-- `AXM_HAS_ATTRIBUTE(x)` - Check for compiler attributes
-- `AXM_HAS_BUILTIN(x)` - Check for compiler builtins
-- `AXM_HAS_FEATURE(x)` - Check for language/compiler features
-- `AXM_HAS_EXTENSION(x)` - Check for compiler extensions
-- `AXM_HAS_CPP_ATTRIBUTE(x)` - Check for standard C++ attributes
-- `AXM_HAS_INCLUDE(x)` - Check for header availability
-- `AXM_HAS_DECLSPEC(x)` - Check for declspec attributes
+- `ATOM_HAS_ATTRIBUTE(x)` - Check for compiler attributes
+- `ATOM_HAS_BUILTIN(x)` - Check for compiler builtins
+- `ATOM_HAS_FEATURE(x)` - Check for language/compiler features
+- `ATOM_HAS_EXTENSION(x)` - Check for compiler extensions
+- `ATOM_HAS_CPP_ATTRIBUTE(x)` - Check for standard C++ attributes
+- `ATOM_HAS_INCLUDE(x)` - Check for header availability
+- `ATOM_HAS_DECLSPEC(x)` - Check for declspec attributes
 
 All feature checks provide conservative defaults (returning 0) when unavailable, allowing callers to implement portable fallbacks.
 
@@ -89,68 +102,78 @@ Safe concurrent access primitives with memory ordering guarantees:
 
 All operations located in `Quark::Atomic::` namespace.
 
-### 6. **Attributes & Compiler Directives** (`Attributes.h`)
+### 5. **Attributes & Compiler Directives** (`Attributes.h`)
 Unified macros for compiler-specific features and optimizations:
 
-- **Standard C++ attributes:** `AXM_NORETURN`, `AXM_NODISCARD`, `AXM_MAYBE_UNUSED`, `AXM_FALLTHROUGH`
-- **Control flow/exceptions:** `AXM_NOEXCEPT`, `AXM_ASSUME`, `AXM_UNREACHABLE`
-- **Deprecation:** `AXM_DEPRECATED`, `AXM_DEPRECATED_MSG`
-- **Visibility/linkage:** `AXM_EXPORT`, `AXM_IMPORT`, `AXM_LOCAL`, `AXM_API`
-- **Inlining:** `AXM_FORCE_INLINE`, `AXM_NO_INLINE`
-- **Optimization hints:** `AXM_LIKELY`, `AXM_UNLIKELY`, `AXM_HOT`, `AXM_COLD`
-- **Function properties:** `AXM_PURE`, `AXM_CONST`, `AXM_MALLOC`, `AXM_ALLOC_SIZE`, `AXM_RETURNS_NONNULL`
-- **Format checking:** `AXM_FORMAT_PRINTF`, `AXM_FORMAT_SCANF`
-- **Memory/layout:** `AXM_PACKED_BEGIN`, `AXM_PACKED_END`, `AXM_PACKED`, `AXM_RESTRICT`, `AXM_MAY_ALIAS`
-- **Language feature shims:** `AXM_CONSTEXPR`, `AXM_THREAD_LOCAL`, `AXM_ALIGNAS`, `AXM_NULLPTR`
-- **Diagnostics:** `AXM_DEBUG_TRAP`, `AXM_FUNC_NAME`, `AXM_FUNC_SIG`, `AXM_LINE`
+- **Standard C++ attributes:** `ATOM_NORETURN`, `ATOM_NODISCARD`, `ATOM_MAYBE_UNUSED`, `ATOM_FALLTHROUGH`
+- **Control flow/exceptions:** `ATOM_NOEXCEPT`, `ATOM_ASSUME`, `ATOM_UNREACHABLE`
+- **Deprecation:** `ATOM_DEPRECATED`, `ATOM_DEPRECATED_MSG`
+- **Visibility/linkage:** `ATOM_EXPORT`, `ATOM_IMPORT`, `ATOM_LOCAL`, `ATOM_API`
+- **Inlining:** `ATOM_FORCE_INLINE`, `ATOM_NO_INLINE`
+- **Optimization hints:** `ATOM_LIKELY`, `ATOM_UNLIKELY`, `ATOM_HOT`, `ATOM_COLD`
+- **Function properties:** `ATOM_PURE`, `ATOM_CONST`, `ATOM_MALLOC`, `ATOM_ALLOC_SIZE`, `ATOM_RETURNS_NONNULL`
+- **Format checking:** `ATOM_FORMAT_PRINTF`, `ATOM_FORMAT_SCANF`
+- **Memory/layout:** `ATOM_PACKED_BEGIN`, `ATOM_PACKED_END`, `ATOM_PACKED`, `ATOM_RESTRICT`, `ATOM_MAY_ALIAS`
+- **Language feature shims:** `ATOM_CONSTEXPR`, `ATOM_THREAD_LOCAL`, `ATOM_ALIGNAS`, `ATOM_NULLPTR`
+- **Diagnostics:** `ATOM_DEBUG_TRAP`, `ATOM_FUNC_NAME`, `ATOM_FUNC_SIG`, `ATOM_LINE`
 
 **Compiler-specific backends:**
 - GCC/Clang: Full support via `__attribute__` syntax
 - MSVC: Support via declspec and pragmas
 - Generic: Minimal fallbacks for unsupported compilers
 
-### 8. **Utilities** (`Utils.h`)
+### 6. **Utilities** (`Utils.h`)
 Common utility macros and helpers:
 
-- **Token concatenation:** `AXM_CONCAT`, `AXM_CONCAT3`
-- **Unused variable suppression:** `AXM_UNUSED`
-- **Memory size helpers:** `AXM_KB`, `AXM_MB`, `AXM_GB`, `AXM_TB`
-- **Type aliasing:** `AXM_ALIAS` (uses C++11 `using` or C++98 `typedef`)
-- **Buffer alignment:** `AXM_ALIGNBUF`
-- **Debug messaging:** `AXM_DEBUG_MESSAGE`, `AXM_DEBUG_MESSAGE_ARGS`
-- **Assertions:** `AXM_ASSERT`, `AXM_ASSERT_MSG` (active in debug builds only)
+- **Token concatenation:** `ATOM_CONCAT`, `ATOM_CONCAT3`
+- **Unused variable suppression:** `ATOM_UNUSED`
+- **Memory size helpers:** `ATOM_KB`, `ATOM_MB`, `ATOM_GB`, `ATOM_TB`
+- **Type aliasing:** `ATOM_ALIAS` (uses C++11 `using` or C++98 `typedef`)
+- **Buffer alignment:** `ATOM_ALIGNBUF`
+- **Debug messaging:** `ATOM_DEBUG_MESSAGE`, `ATOM_DEBUG_MESSAGE_ARGS`
+- **Assertions:** `ATOM_ASSERT`, `ATOM_ASSERT_MSG` (active in debug builds only)
 
 ## Directory Structure
 
 ```
 Quark/
-├── Include/Quark/
-│   ├── Atomic.h              # Atomic operations facade
-│   ├── Attributes.h          # Compiler attributes facade
-│   ├── Features.h            # Feature detection macros
-│   ├── System.h              # System detection umbrella header
-│   ├── Types.h               # Type aliases
-│   ├── Utils.h               # Utility macros
-│   ├── System/               # System detection headers
-│   │   ├── Arch.h            # Architecture detection
-│   │   ├── Compiler.h        # Compiler detection
-│   │   ├── Cpp.h             # C++ standard detection
-│   │   ├── Endian.h          # Endianness detection
-│   │   ├── Os.h              # OS detection
-│   │   ├── Sanitizer.h       # Sanitizer detection
-│   │   └── Simd.h            # SIMD feature detection
-│   ├── GCC/                  # GCC/Clang implementations
-│   │   ├── Atomic.h          # __atomic_* builtins
-│   │   ├── Attributes.h      # __attribute__ directives
-│   ├── MSVC/                 # MSVC-specific implementations
-│   │   ├── Atomic.h          # _Interlocked* intrinsics
-│   │   ├── Attributes.h      # declspec and pragmas
-│   ├── Generic/              # Portable fallbacks
-│   │   ├── Atomic.h          # C11 or safe fallback
-│   │   ├── Attributes.h      # Minimal fallbacks
-├── CMakeLists.txt            # Build configuration
-├── Testing.cpp               # Testing driver (generates compile_commands.json)
-└── README.md                 # This file
+├── Include/
+│   └── Quark/
+│       ├── Types.h
+│       ├── Utils.h
+│       ├── Features.h
+│       ├── System.h
+│       ├── Standard.h
+│       ├── Extensions.h
+│       ├── Extensions/
+│       │   ├── Attributes/
+│       │   │   ├── GCC.h
+│       │   │   ├── MSVC.h
+│       │   │   └── Unknown.h
+│       │   └── Keywords/
+│       │       ├── GCC.h
+│       │       ├── MSVC.h
+│       │       └── Unknown.h
+│       ├── Standard/
+│       │   ├── Attributes/
+│       │   │   ├── GCC.h
+│       │   │   ├── MSVC.h
+│       │   │   └── Unknown.h
+│       │   └── Keywords/
+│       │       ├── GCC.h
+│       │       ├── MSVC.h
+│       │       └── Unknown.h
+│       └── System/
+│           ├── Arch.h
+│           ├── Compiler.h
+│           ├── Cpp.h
+│           ├── Endian.h
+│           ├── Os.h
+│           ├── Sanitizer.h
+│           └── Simd.h
+├── CMakeLists.txt
+├── Testing.cpp
+└── README.md
 ```
 
 ## Usage
@@ -175,29 +198,29 @@ Quark/
 #include <Quark/System.h>
 
 // Query platform at compile time
-#if AXM_COMPILER_GCC_LIKE
+#if ATOM_COMPILER_GCC_LIKE
     // GCC/Clang-specific code
-#elif AXM_COMPILER_MSVC_LIKE
+#elif ATOM_COMPILER_MSVC_LIKE
     // MSVC-specific code
 #endif
 
-#if AXM_BUILD_DEBUG
+#if ATOM_BUILD_DEBUG
     // Debug build
-#elif AXM_BUILD_RELEASE
+#elif ATOM_BUILD_RELEASE
     // Release build
 #endif
 
 // Endianness queries
-#if AXM_ENDIAN_BIG
+#if ATOM_ENDIAN_BIG
     // Big-endian platform
 #else
     // Little-endian platform
 #endif
 
 // SIMD capability queries
-#if AXM_SIMD_AVX2
+#if ATOM_SIMD_AVX2
     // AVX2 available
-#elif AXM_SIMD_SSE2
+#elif ATOM_SIMD_SSE2
     // SSE2 available
 #endif
 ```
@@ -241,20 +264,20 @@ while (Quark::Atomic::load<int>(&ready, Quark::Atomic::ACQUIRE) == 0) {
 #include <Quark/Attributes.h>
 
 // Force inlining for performance-critical code
-AXM_FORCE_INLINE int hot_path(int x) {
+ATOM_FORCE_INLINE int hot_path(int x) {
     return x * 2;
 }
 
 // Mark as pure (no side effects, only depends on arguments)
-AXM_PURE int compute_hash(const char* str);
+ATOM_PURE int compute_hash(const char* str);
 
 // Mark obsolete function
-AXM_DEPRECATED void old_function() {
+ATOM_DEPRECATED void old_function() {
     // Implementation
 }
 
 // Add likely/unlikely hints for branch prediction
-if (AXM_LIKELY(size > 0)) {
+if (ATOM_LIKELY(size > 0)) {
     process_items();
 }
 ```
@@ -265,14 +288,14 @@ if (AXM_LIKELY(size > 0)) {
 #include <Quark/Features.h>
 
 // Conditional code based on compiler capabilities
-#if AXM_HAS_ATTRIBUTE(__noreturn__)
+#if ATOM_HAS_ATTRIBUTE(__noreturn__)
     #define MY_NORETURN __attribute__((__noreturn__))
 #else
     #define MY_NORETURN
 #endif
 
 // Check if particular builtin is available
-#if AXM_HAS_BUILTIN(__builtin_expect)
+#if ATOM_HAS_BUILTIN(__builtin_expect)
     #define PREDICT(cond, val) __builtin_expect(cond, val)
 #else
     #define PREDICT(cond, val) (cond)
@@ -283,7 +306,7 @@ if (AXM_LIKELY(size > 0)) {
 
 ### CMake
 
-The library uses CMake with Axiom framework integration. Key build commands:
+The library uses CMake with Atom framework integration. Key build commands:
 
 ```bash
 # Debug build
@@ -315,7 +338,7 @@ cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON <build_dir>
 Quark uses a **facade pattern** with compiler-specific backends:
 
 1. **Public headers** (e.g., `Atomic.h`, `BitOperations.h`) act as stable facades
-2. Each facade selects a backend at compile time based on `AXM_COMPILER_*` macros
+2. Each facade selects a backend at compile time based on `ATOM_COMPILER_*` macros
 3. **Three-tier fallback strategy:**
    - GCC/Clang optimized implementation (best performance)
    - MSVC optimized implementation (good performance on Windows)
@@ -332,7 +355,7 @@ This design ensures:
 ### Prerequisites
 - CMake >= 3.21
 - C++ compiler (GCC, Clang, or MSVC)
-- Axiom framework CMake modules (in `~/.axiom/CMake`)
+- Atom framework CMake modules (in `~/.atom/CMake`)
 
 ### Build Steps
 
@@ -364,7 +387,7 @@ cmake --build .
 
 ## License & Attribution
 
-Part of the **Axiom framework** plugin ecosystem. Consult the Axiom documentation and licensing for additional information.
+Part of the **Atom framework** plugin ecosystem. Consult the Atom documentation and licensing for additional information.
 
 ## Common Patterns
 
@@ -373,9 +396,9 @@ Part of the **Axiom framework** plugin ecosystem. Consult the Axiom documentatio
 ```cpp
 #include <Quark/System.h>
 
-#if AXM_COMPILER_GCC_LIKE
+#if ATOM_COMPILER_GCC_LIKE
     // GCC/Clang specific
-#elif AXM_COMPILER_MSVC_LIKE
+#elif ATOM_COMPILER_MSVC_LIKE
     // MSVC specific
 #else
     #error "Unsupported compiler"
@@ -387,12 +410,12 @@ Part of the **Axiom framework** plugin ecosystem. Consult the Axiom documentatio
 ```cpp
 #include <Quark/Features.h>
 
-#if AXM_HAS_CPP_ATTRIBUTE(carries_dependency)
-#    define AXM_CARRIES_DEPENDENCY [[carries_dependency]]
-#elif AXM_HAS_ATTRIBUTE(carries_dependency)
-#    define AXM_CARRIES_DEPENDENCY __attribute__((carries_dependency))
+#if ATOM_HAS_CPP_ATTRIBUTE(carries_dependency)
+#    define ATOM_CARRIES_DEPENDENCY [[carries_dependency]]
+#elif ATOM_HAS_ATTRIBUTE(carries_dependency)
+#    define ATOM_CARRIES_DEPENDENCY __attribute__((carries_dependency))
 #else
-#    define AXM_CARRIES_DEPENDENCY
+#    define ATOM_CARRIES_DEPENDENCY
 #endif
 ```
 
@@ -404,7 +427,7 @@ Part of the **Axiom framework** plugin ecosystem. Consult the Axiom documentatio
 
 ### Issue: Incorrect endianness conversion results
 - **Cause:** Not including system detection headers or platform detection failing
-- **Solution:** Include `Quark/System.h` which detects platform endianness, or check that `AXM_LITTLE_ENDIAN` or `AXM_BIG_ENDIAN` are properly defined
+- **Solution:** Include `Quark/System.h` which detects platform endianness, or check that `ATOM_LITTLE_ENDIAN` or `ATOM_BIG_ENDIAN` are properly defined
 
 ### Issue: Getting compiler errors in bit operations
 - **Cause:** Potentially incompatible compiler or architecture not fully supported

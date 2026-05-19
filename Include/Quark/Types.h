@@ -10,13 +10,14 @@
  * binary formats, and anywhere exact widths or clear intent improve
  * maintainability.
  */
-#ifndef AXM_QRK_TYPES_H
-#define AXM_QRK_TYPES_H
+#ifndef ATOM_QRK_TYPES_H
+#define ATOM_QRK_TYPES_H
 
 #include <float.h>
 #include <stddef.h>
 #include <stdint.h>
 
+#include "Standard.h"
 #include "Utils.h"
 
 /**
@@ -27,10 +28,10 @@
  * formats, network protocols, serialization, and hashing. They offer
  * predictable behaviour across compilers and architectures.
  */
-AXM_ALIAS(uint8_t, u8)
-AXM_ALIAS(uint16_t, u16)
-AXM_ALIAS(uint32_t, u32)
-AXM_ALIAS(uint64_t, u64)
+ATOM_ALIAS(uint8_t, u8)
+ATOM_ALIAS(uint16_t, u16)
+ATOM_ALIAS(uint32_t, u32)
+ATOM_ALIAS(uint64_t, u64)
 
 /**
  * @brief Fixed-width signed integers.
@@ -39,10 +40,10 @@ AXM_ALIAS(uint64_t, u64)
  * you need portable, predictable signed integer behaviour and clearly
  * defined storage sizes in APIs, arithmetic, or on-disk representations.
  */
-AXM_ALIAS(int8_t, i8)
-AXM_ALIAS(int16_t, i16)
-AXM_ALIAS(int32_t, i32)
-AXM_ALIAS(int64_t, i64)
+ATOM_ALIAS(int8_t, i8)
+ATOM_ALIAS(int16_t, i16)
+ATOM_ALIAS(int32_t, i32)
+ATOM_ALIAS(int64_t, i64)
 
 /**
  * @brief Fast integer types (at least N bits) — performance-oriented.
@@ -52,15 +53,15 @@ AXM_ALIAS(int64_t, i64)
  * are appropriate when performance is a higher priority than exact layout
  * or binary compatibility.
  */
-AXM_ALIAS(uint_fast8_t, u8f)
-AXM_ALIAS(uint_fast16_t, u16f)
-AXM_ALIAS(uint_fast32_t, u32f)
-AXM_ALIAS(uint_fast64_t, u64f)
+ATOM_ALIAS(uint_fast8_t, u8f)
+ATOM_ALIAS(uint_fast16_t, u16f)
+ATOM_ALIAS(uint_fast32_t, u32f)
+ATOM_ALIAS(uint_fast64_t, u64f)
 
-AXM_ALIAS(int_fast8_t, i8f)
-AXM_ALIAS(int_fast16_t, i16f)
-AXM_ALIAS(int_fast32_t, i32f)
-AXM_ALIAS(int_fast64_t, i64f)
+ATOM_ALIAS(int_fast8_t, i8f)
+ATOM_ALIAS(int_fast16_t, i16f)
+ATOM_ALIAS(int_fast32_t, i32f)
+ATOM_ALIAS(int_fast64_t, i64f)
 
 /**
  * @brief Smallest integer types (at least N bits) — memory-oriented.
@@ -71,15 +72,15 @@ AXM_ALIAS(int_fast64_t, i64f)
  * but are not intended for persistent or network formats that depend on
  * exact byte layouts.
  */
-AXM_ALIAS(uint_least8_t, u8l)
-AXM_ALIAS(uint_least16_t, u16l)
-AXM_ALIAS(uint_least32_t, u32l)
-AXM_ALIAS(uint_least64_t, u64l)
+ATOM_ALIAS(uint_least8_t, u8l)
+ATOM_ALIAS(uint_least16_t, u16l)
+ATOM_ALIAS(uint_least32_t, u32l)
+ATOM_ALIAS(uint_least64_t, u64l)
 
-AXM_ALIAS(int_least8_t, i8l)
-AXM_ALIAS(int_least16_t, i16l)
-AXM_ALIAS(int_least32_t, i32l)
-AXM_ALIAS(int_least64_t, i64l)
+ATOM_ALIAS(int_least8_t, i8l)
+ATOM_ALIAS(int_least16_t, i16l)
+ATOM_ALIAS(int_least32_t, i32l)
+ATOM_ALIAS(int_least64_t, i64l)
 
 /**
  * @brief Pointer-sized and byte-oriented aliases.
@@ -90,12 +91,12 @@ AXM_ALIAS(int_least64_t, i64l)
  * `byte` for raw byte buffers. These map to platform types and should not
  * be assumed to have fixed numeric widths for persistent layouts.
  */
-AXM_ALIAS(void*, vptr)
-AXM_ALIAS(size_t, usize)
-AXM_ALIAS(ptrdiff_t, isize)
-AXM_ALIAS(uintptr_t, uptr)
-AXM_ALIAS(intptr_t, iptr)
-AXM_ALIAS(uint8_t, byte)
+ATOM_ALIAS(void*, vptr)
+ATOM_ALIAS(size_t, usize)
+ATOM_ALIAS(ptrdiff_t, isize)
+ATOM_ALIAS(uintptr_t, uptr)
+ATOM_ALIAS(intptr_t, iptr)
+ATOM_ALIAS(uint8_t, byte)
 
 /**
  * @brief Floating-point aliases.
@@ -105,12 +106,12 @@ AXM_ALIAS(uint8_t, byte)
  * provided for extended precision where supported, but may be equivalent
  * to `double` on some platforms.
  */
-AXM_ALIAS(float, f32)
-AXM_ALIAS(double, f64)
+ATOM_ALIAS(float, f32)
+ATOM_ALIAS(double, f64)
 #if defined(LDBL_MANT_DIG) && defined(DBL_MANT_DIG) && (LDBL_MANT_DIG > DBL_MANT_DIG)
-AXM_ALIAS(long double, f80)
+ATOM_ALIAS(long double, f80)
 #else
-AXM_ALIAS(double, f80)
+ATOM_ALIAS(double, f80)
 #endif
 
 /**
@@ -122,15 +123,20 @@ AXM_ALIAS(double, f80)
  * intended storage width; prefer higher-level string types for text and
  * encoding-aware operations.
  */
-AXM_ALIAS(uint8_t, b8)
-AXM_ALIAS(uint32_t, b32)
+ATOM_ALIAS(uint8_t, b8)
+ATOM_ALIAS(uint32_t, b32)
 
-#define AXM_TRUE  1
-#define AXM_FALSE 0
+#define ATOM_TRUE  1
+#define ATOM_FALSE 0
 
-AXM_ALIAS(uint_least8_t, c8)
-AXM_ALIAS(uint_least16_t, c16)
-AXM_ALIAS(uint_least32_t, c32)
-AXM_ALIAS(wchar_t, wc)
+ATOM_ALIAS(uint_least8_t, c8)
+ATOM_ALIAS(uint_least16_t, c16)
+ATOM_ALIAS(uint_least32_t, c32)
+ATOM_ALIAS(wchar_t, wc)
+
+ATOM_STATIC_ASSERT(sizeof(u8) == 1, "c8 must be 1 byte");
+ATOM_STATIC_ASSERT(sizeof(u16) == 2, "u16 must be 2 bytes");
+ATOM_STATIC_ASSERT(sizeof(u32) == 4, "u32 must be 4 bytes");
+ATOM_STATIC_ASSERT(sizeof(u64) == 8, "u64 must be 8 bytes");
 
 #endif

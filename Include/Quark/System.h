@@ -6,24 +6,24 @@
  * sanitizer, and SIMD detection headers into a single include point.
  *
  * Macro hierarchy:
- * - AXM_QRK_SYSTEM_H
+ * - ATOM_QRK_SYSTEM_H
  *   - Include guard for this umbrella header.
  *
  * - Build configuration
- *   - AXM_BUILD_RELEASE: defined when NDEBUG is set.
- *   - AXM_BUILD_DEBUG: defined when NDEBUG is not set.
+ *   - ATOM_BUILD_RELEASE: defined when NDEBUG is set.
+ *   - ATOM_BUILD_DEBUG: defined when NDEBUG is not set.
  *
  * Included detection groups:
- * - AXM_ARCH_*        : CPU architecture and pointer-width detection
- * - AXM_COMPILER_*     : Compiler identification, family, and version data
- * - AXM_LANGUAGE_CXX   : C++ language marker and AXM_CXX_STANDARD feature level
- * - AXM_ENDIAN_*       : Byte-order detection
- * - AXM_OS_*           : Operating-system detection
- * - AXM_SANITIZER_*    : Runtime sanitizer detection
- * - AXM_SIMD_*         : SIMD and vector feature detection
+ * - ATOM_ARCH_*        : CPU architecture and pointer-width detection
+ * - ATOM_COMPILER_*     : Compiler identification, family, and version data
+ * - ATOM_LANGUAGE_CXX   : C++ language marker and ATOM_CXX_STANDARD feature level
+ * - ATOM_ENDIAN_*       : Byte-order detection
+ * - ATOM_OS_*           : Operating-system detection
+ * - ATOM_SANITIZER_*    : Runtime sanitizer detection
+ * - ATOM_SIMD_*         : SIMD and vector feature detection
  */
-#ifndef AXM_QRK_SYSTEM_H
-#define AXM_QRK_SYSTEM_H
+#ifndef ATOM_QRK_SYSTEM_H
+#define ATOM_QRK_SYSTEM_H
 
 // IWYU pragma: begin_exports
 #include "System/Arch.h"
@@ -37,13 +37,13 @@
 
 /**
  * Build mode derived from NDEBUG.
- * - AXM_BUILD_RELEASE: defined when NDEBUG is enabled.
- * - AXM_BUILD_DEBUG: defined when NDEBUG is disabled.
+ * - ATOM_BUILD_RELEASE: defined when NDEBUG is enabled.
+ * - ATOM_BUILD_DEBUG: defined when NDEBUG is disabled.
  */
 #if defined(NDEBUG)
-#    define AXM_BUILD_RELEASE 1
+#    define ATOM_BUILD_RELEASE 1
 #else
-#    define AXM_BUILD_DEBUG 1
+#    define ATOM_BUILD_DEBUG 1
 #endif
 
 #endif
